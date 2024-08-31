@@ -6,7 +6,7 @@ const apiKey = import.meta.env.VITE_STRIKE_API_KEY;
 export const StrikeUser = () => {
     const [profile, setProfile] = useState(null);
     const [handle, setHandle] = useState('');
-
+    
     const getProfile = async () => {
         try {
             const response = await axios.get(`${apiUrl}/accounts/handle/${handle}/profile`, { 
@@ -48,6 +48,10 @@ export const StrikeUser = () => {
                     <p>{profile.canReceive ? 'Account can recieve payment' : 'Account can not recieve payment'}</p>
                     <p>Available currencies: {profile.currencies.map((currency) => (currency.currency)).join(', ')}</p>
                     <p>{profile.currencies.map((currency) => (currency.isDefaultCurrency))}</p>
+                    <p>{profile.currencies.map((currency) => (currency.isInvoiceable ? 
+                        `${currency.currency} is invoiceable` 
+                        : 
+                        `${currency.currency} is not invoiceable`))}</p>
                     <p>User id: {profile.id}</p>
                 </fieldset>
             }

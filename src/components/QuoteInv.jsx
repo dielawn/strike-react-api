@@ -3,30 +3,9 @@ import axios from 'axios';
 const apiUrl = import.meta.env.VITE_STRIKE_URL;
 const apiKey = import.meta.env.VITE_STRIKE_API_KEY;
 
-export const QuoteInvoice = ({ invoiceId, quoteId, setQuoteId, lnInvoice, setLnInvoice }) => {
+export const QuoteInvoice = () => {
+    const [invoiceId, setInvoiceId] = useState('')
     const [quote, setQuote] = useState(null);
-    const [isExpired, setIsExpired] = useState(true);
-
-    // set is expired when quote expires
-    useEffect(() => {
-        if (!quote) {
-            setIsExpired(true)
-        } else {
-            const expiration = new Date(quote.expiration)
-            const currentTime = Date.now()
-            const expired = expiration > currentTime
-            setIsExpired(expired)
-        }
-    }, [quote, invoiceId])
-
-    // if invoce is deleted, delete quote when expired
-    useEffect(() => {
-        if (isExpired) {
-            setQuote(null)
-            setQuoteId('');
-            setLnInvoice('');
-        }
-    }, [isExpired])
 
     const quoteFromInvoice = async () => {
         try {
@@ -45,46 +24,34 @@ export const QuoteInvoice = ({ invoiceId, quoteId, setQuoteId, lnInvoice, setLnI
              throw error; 
          }
     };
-    // Create a quote from invoiceId
-    useEffect(() => {
-        if (invoiceId !== '') {
-            quoteFromInvoice();
-        }
-    }, [invoiceId]);
-
-    // Set quoteId and lnInvoice
-    useEffect(() => {
-        if (quote !== null) {
-            setQuoteId(quote.quoteId);
-            setLnInvoice(quote.lnInvoice);
-            
-        }        
-    }, [quote]);
-
-    // Renew quote before expiration
-    useEffect(() => {
-        if (invoiceId !== '') {
-            const intervalId = setInterval(() => {
-                if (quote !== null) {
-                    console.log('New quote')
-                    quoteFromInvoice();
-                }
-            }, 45000); //Quotes expire after 57 sec
-            return () => clearInterval(intervalId);    
-        }
-          
-    }, [quote]);
-
+    
     const copyLnInv = () => {
         navigator.clipboard.writeText(quote.lnInvoice)
     };
 
+    const copyQuoteId = () => {
+        navigator.clipboard.writeText(quote.quoteId)
+    };
+
     return (
         <fieldset>
-            <legend>Quote from Invoice</legend>
-            {quoteId && <p>Quote Id: {quoteId}</p>}
-            {quote && <p>Expiration: {quote.expiration}</p>}
-            {lnInvoice && <button type="button" onClick={copyLnInv}>Copy Lightning Inv: {lnInvoice.slice(0, 9)}...{lnInvoice.slice(263, 268)}</button>}
+            <legend>Quote from Strike Invoice</legend>
+            <label>
+                <input 
+                    value={invoiceId}
+                    onChange={(e) => setInvoiceId(e.target.value)}
+                />
+            </label>
+            <button type="button" onClick={quoteFromInvoice} >Create Quote</button>
+    
+            {quote && 
+            <>
+                <p>Expiration: {quote.expiration}</p>
+                <p>Quote id: {quote.quoteId}</p>
+                <button type="button" onClick={copyQuoteId}>Copy Quote Id</button>
+                <p>Lightning Invoice: {quote.lnInvoice.slice(0, 9)}...{quote.lnInvoice.slice(-10, quote.lnInvoice.length)}</p>
+                <button type="button" onClick={copyLnInv}>Copy Lightning Inv</button>
+            </>}
         </fieldset>
     )
 };

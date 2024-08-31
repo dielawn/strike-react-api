@@ -1,61 +1,48 @@
+import { useState } from "react";
 import axios from 'axios';
-import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-
 const apiUrl = import.meta.env.VITE_STRIKE_URL;
 const apiKey = import.meta.env.VITE_STRIKE_API_KEY;
 
-export const Invoice = ({ currency, totalUSD, totalBTC, deleteInvoice }) => {
-    const [invoice, setInvoice] = useState(null);
+export const UserInvoice = ({ currency, totalUSD, totalBTC }) => {
+    const [handle, setHandle] = useState('');
+    const [userInvoice, setUserInvoice] = useState(null);    
     const [description, setDescription] = useState('');
-    
-    const createInvoice = async () => {
-        console.log(description, currency, totalUSD, totalBTC)
-        if (!description || !currency || totalUSD === 0 || totalBTC === 0) {
-            throw new Error('Missing required parameters');
-        }
-        const correlationId = uuidv4();        
+
+    const createUserInvoice = async () => {
+        const correlationId = uuidv4();
         const formattedCurrency = currency.toUpperCase();
-               
-        const data = { 
+        const data = {
             correlationId,
             description,
             amount: {
                 currency: formattedCurrency === 'SATS' ? 'BTC' : formattedCurrency,
                 amount: currency === 'USD' ? totalUSD : totalBTC
             }
-         }
-        try {
-           const response = await axios.post(`${apiUrl}/invoices`, data, { 
+        }
+        try {   
+            const response = await axios.post(`${apiUrl}/invoices/handle/${handle}`, data, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${apiKey}`, 
-                },  
+                },     
             })
             const responseData = response.data
-            console.log('Invoice created:', responseData)
-            setInvoice(responseData)
+            console.log('Inv from handle: ', responseData)
+            setUserInvoice(responseData)
     
         } catch (error) {
-            console.error('Error creating new invoice:', error.response?.data || error.message);
-            throw error; 
+            console.error('Error ', error.response?.data || error.message);
         }
     };
 
-    const handleDeleteInvoice = () => {
-        deleteInvoice();
-        setInvoice(null);
-    };
+   const copyInvId = () => {
+    navigator.clipboard.writeText(userInvoice.invoiceId)
+   };
 
-    const copyInvId = () => {
-        navigator.clipboard.writeText(invoice.invoiceId)
-    };
-
- 
     return (
         <fieldset>
-            <legend>Create Strike Invoice</legend>
-            
+            <legend>Create an invoice on behalf of another user</legend>
             {/* <label>Amount: 
                 <input 
                 value={
@@ -74,18 +61,21 @@ export const Invoice = ({ currency, totalUSD, totalBTC, deleteInvoice }) => {
                     onChange={(e) => setDescription(e.target.value)}
                 />
             </label>
+            <label>Handle
+                <input 
+                    value={handle}
+                    onChange={(e) => setHandle(e.target.value)}
+                />
+            </label>
            
-            <button type='button' onClick={createInvoice}>Create Invoice</button>
-            {invoice && 
-            <>
-            <p>Invoice Id: {invoice.invoiceId}</p>
-            <button type='button' onClick={copyInvId}>Copy Invoice Id to clipboard</button>
-            <button type='button' onClick={handleDeleteInvoice}>Delete Invoice</button>
-            </>}
+           
+            <button type='button' onClick={createUserInvoice}>Create Invoice</button>
+            {userInvoice && 
+                <>
+                    <p>{userInvoice.quoteId}</p>    
+                    <button type='button' onClick={copyInvId}>Copy Invoice Id to clipboard</button>
+                </>
+            }
         </fieldset>
     )
-};
-
-
-
-
+}

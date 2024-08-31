@@ -7,7 +7,7 @@ export const CurrencySelect = ({ currency, setCurrency }) => {
 
     return (
         <fieldset>
-            <legend>Preferred Currency</legend>
+            <legend>Preferred Unit</legend>
             <select 
                 value={currency} 
                 onChange={handleCurrencyChange}
