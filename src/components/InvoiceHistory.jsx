@@ -38,9 +38,13 @@ const InvoiceHistory = () => {
         const unpaidHistory = await getHistory('UNPAID');
         setUnpaid(unpaidHistory);
       }
-      fetchHistory();
 
+      fetchHistory();
     }, []);
+
+    const copyInvId= (inv) => {
+        navigator.clipboard.writeText(inv.invoiceId)
+    };
 
     const Invoice = ({ inv }) => {
         const { amount, currency } = inv.amount;
@@ -49,39 +53,27 @@ const InvoiceHistory = () => {
             <>
                 <p>{amount} {currency}</p>
                 <p>{description}</p>
+                <button onClick={() => copyInvId(inv)}>Copy Invoice Id</button>
             </>
         )
     };
-
-    const copyInvId= (inv) => {
-        navigator.clipboard.writeText(inv.invoiceId)
-    }
 
     return (
         <fieldset>
             <legend>History</legend>
             {paid && <h3>Paid Invoices</h3>}
             {paid.length > 0 ? paid.map((inv) => (
-                <>
-                    <Invoice inv={inv} />
-                    <button onClick={() => copyInvId()}>Copy Invoice Id</button>
-                </>
+                <Invoice inv={inv} />
             )) : <p>No Paid Invoices</p>
            }
            {pending && <h3>Pending Invoices</h3>}
             {pending.length > 0 ? pending.map((inv) => (
-                <>
-                    <Invoice inv={inv} />
-                    <button onClick={() => copyInvId()}>Copy Invoice Id</button>
-                </>
+                <Invoice inv={inv} />
             )) : <p>No Pending Invoices</p>
             }
             {unpaid && <h3>Unpaid Invoices</h3>}
             {unpaid.length > 0 ? unpaid.map((inv) => (
-                 <>
-                    <Invoice inv={inv} />
-                    <button onClick={() => copyInvId()}>Copy Invoice Id</button>
-                </>
+                  <Invoice inv={inv} />
             )) : <p>No Unpaid Invoices</p>
             }
         </fieldset>

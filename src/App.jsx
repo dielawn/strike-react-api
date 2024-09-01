@@ -11,6 +11,8 @@ import { getExchangeRates, rateCalculator } from '../utils';
 import { UserInvoice } from './components/InvoiceFromHandle';
 import { LightningPaymentQuote } from './components/LightningPaymentQuote';
 import InvoiceHistory from './components/InvoiceHistory';
+import { OnChainPaymentQuote } from './components/OnChainPayQuote';
+
 
 function App() {
   const [activeTab, setActiveTab] = useState('getPaid');
@@ -85,8 +87,9 @@ function App() {
         <button onClick={() => handleTabChange('payOut')}>Pay Out</button>
         <button onClick={() => handleTabChange('searchDiv')}>Search</button>
         <button onClick={() => handleTabChange('historyDiv')}>History</button>
+        <button onClick={() => handleTabChange('payOnChain')}>On Chain</button>
       </div>
-      {(activeTab === 'payOut' || activeTab === 'getPaid')  &&
+      {(activeTab === 'payOut' || activeTab === 'getPaid' || activeTab === 'payOnChain')  &&
        <div>
        {totalUSD > 0 && 
         <> 
@@ -135,6 +138,11 @@ function App() {
         <LightningPaymentQuote currency={currency} />
         <PayStrikeInv />
       </div>}
+    {activeTab === 'payOnChain' && 
+      <div className="payOnChain">
+        <OnChainPaymentQuote currency={currency} totalUSD={totalUSD} totalBTC={totalBTC}/>
+      </div>
+    }
 
     {activeTab === 'payBank' &&
       <div>
