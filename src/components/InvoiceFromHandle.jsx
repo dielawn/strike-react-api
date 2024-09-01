@@ -3,6 +3,8 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 const apiUrl = import.meta.env.VITE_STRIKE_URL;
 const apiKey = import.meta.env.VITE_STRIKE_API_KEY;
+import { PayStrikeInv } from "./PayInvoice";
+
 
 export const UserInvoice = ({ currency, totalUSD, totalBTC }) => {
     const [handle, setHandle] = useState('');
@@ -36,12 +38,13 @@ export const UserInvoice = ({ currency, totalUSD, totalBTC }) => {
         }
     };
 
-   const copyInvId = () => {
-    navigator.clipboard.writeText(userInvoice.invoiceId)
+   const handlePay = () => {
+    console.log('nothing happened')
    };
 
+
     return (
-        <fieldset>
+        <div>
             <legend>Create an invoice on behalf of another user</legend>
             <label>Description
                 <input 
@@ -58,10 +61,11 @@ export const UserInvoice = ({ currency, totalUSD, totalBTC }) => {
             <button type='button' onClick={createUserInvoice}>Create Invoice</button>
             {userInvoice && 
                 <>
-                    <p>{userInvoice.quoteId}</p>    
-                    <button type='button' onClick={copyInvId}>Copy Invoice Id to clipboard</button>
+                    <p>{userInvoice.invoiceId}</p>    
+                    <button type='button' onClick={handlePay}>Pay Invoice</button>
+                    <PayStrikeInv quoteId={userInvoice.invoiceId}/>
                 </>
             }
-        </fieldset>
+        </div>
     )
 }

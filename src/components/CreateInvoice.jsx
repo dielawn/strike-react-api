@@ -53,7 +53,7 @@ export const Invoice = ({ currency, totalUSD, totalBTC, deleteInvoice }) => {
 
  
     return (
-        <fieldset>
+        <div>
             <legend>Create Strike Invoice</legend>
             
             {/* <label>Amount: 
@@ -82,7 +82,7 @@ export const Invoice = ({ currency, totalUSD, totalBTC, deleteInvoice }) => {
             <button type='button' onClick={copyInvId}>Copy Invoice Id to clipboard</button>
             <button type='button' onClick={handleDeleteInvoice}>Delete Invoice</button>
             </>}
-        </fieldset>
+        </div>
     )
 };
 

@@ -6,7 +6,7 @@ const apiKey = import.meta.env.VITE_STRIKE_API_KEY;
 export const StrikeUser = () => {
     const [profile, setProfile] = useState(null);
     const [handle, setHandle] = useState('');
-    
+
     const getProfile = async () => {
         try {
             const response = await axios.get(`${apiUrl}/accounts/handle/${handle}/profile`, { 
@@ -31,7 +31,7 @@ export const StrikeUser = () => {
     }, [profile])
     
     return (
-        <fieldset>
+        <div>
             <legend>Get user profile</legend>
             <label>User Handle
             <input 
@@ -55,7 +55,7 @@ export const StrikeUser = () => {
                     <p>User id: {profile.id}</p>
                 </fieldset>
             }
-        </fieldset>
+        </div>
 
     )
 }

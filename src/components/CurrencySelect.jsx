@@ -6,7 +6,7 @@ export const CurrencySelect = ({ currency, setCurrency }) => {
     };
 
     return (
-        <fieldset>
+        <div>
             <legend>Preferred Unit</legend>
             <select 
                 value={currency} 
@@ -20,6 +20,6 @@ export const CurrencySelect = ({ currency, setCurrency }) => {
                     </option>
                 ))}
             </select>
-        </fieldset>
+        </div>
     );
 };

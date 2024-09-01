@@ -50,33 +50,33 @@ const InvoiceHistory = () => {
         const { amount, currency } = inv.amount;
         const description = inv.description;
         return (
-            <>
+            <div>
                 <p>{amount} {currency}</p>
                 <p>{description}</p>
                 <button onClick={() => copyInvId(inv)}>Copy Invoice Id</button>
-            </>
+            </div>
         )
     };
 
     return (
-        <fieldset>
+        <div>
             <legend>History</legend>
             {paid && <h3>Paid Invoices</h3>}
             {paid.length > 0 ? paid.map((inv) => (
-                <Invoice inv={inv} />
+                <Invoice key={uuidv4()} inv={inv} />
             )) : <p>No Paid Invoices</p>
            }
            {pending && <h3>Pending Invoices</h3>}
             {pending.length > 0 ? pending.map((inv) => (
-                <Invoice inv={inv} />
+                <Invoice key={uuidv4()} inv={inv} />
             )) : <p>No Pending Invoices</p>
             }
             {unpaid && <h3>Unpaid Invoices</h3>}
             {unpaid.length > 0 ? unpaid.map((inv) => (
-                  <Invoice inv={inv} />
+                  <Invoice key={uuidv4()} inv={inv} />
             )) : <p>No Unpaid Invoices</p>
             }
-        </fieldset>
+        </div>
     )
 };
 

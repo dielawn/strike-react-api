@@ -25,7 +25,7 @@ export const SearchInvoices = () => {
     };
 
     return (
-        <fieldset>
+        <div>
             <legend>Search by invoice id</legend>
             <label>Invoice Id
                 <input 
@@ -46,6 +46,6 @@ export const SearchInvoices = () => {
                 <p>{foundInvoice.state}</p>
             </>
             }
-        </fieldset>
+        </div>
     )
 };

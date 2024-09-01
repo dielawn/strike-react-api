@@ -93,7 +93,7 @@ export const BankPayout = () => {
     };
 
     return (
-        <fieldset>
+        <div>
             <legend>Bank Payout</legend>
             <form onSubmit={(e) => {e.preventDefault(); payout();}}>
                 <h2>Bank Information</h2>
@@ -234,7 +234,7 @@ export const BankPayout = () => {
 
                 <button type="submit">Submit Payout</button>
             </form>
-        </fieldset>
+        </div>
     );
 };
 

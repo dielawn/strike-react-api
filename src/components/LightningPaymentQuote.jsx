@@ -35,25 +35,9 @@ export const LightningPaymentQuote = ({ currency }) => {
         navigator.clipboard.writeText(payment.paymentQuoteId)
     };
 
-    const calcFee = () => {
-        const submittedAmount = payment.amount.amount;
-        const totalAmount = payment.totalAmount;
-        const feeAmount = totalAmount - submittedAmount
-        setFee(feeAmount);
-    }
-
-    useEffect(() => {
-       if (lnInvoice !== '') {
-        const submittedAmount = payment.amount.amount;
-        const totalAmount = payment.totalAmount;
-        if (totalAmount > submittedAmount) {
-            calcFee();
-        }
-       }
-    }, [lnInvoice]);
 
     return (
-        <fieldset>
+        <div>
             <legend>Create Lightning Pay Quote</legend>
             <label>Lightning Inv: 
                 <input 
@@ -66,10 +50,10 @@ export const LightningPaymentQuote = ({ currency }) => {
             <>
                 <p>{payment.amount.currency === 'USD' ? `$${payment.amount.amount}` : `${payment.amount.amount} btc`}</p>
                 <p>{payment.description}</p>
-                <p>Fee: {fee}</p>
+               
                 <button type='button' onClick={copyQuoteId}>Copy Lightning Quote Id</button>
             </>
             }
-        </fieldset>
+        </div>
     )
 }

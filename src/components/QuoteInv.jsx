@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from 'axios';
 const apiUrl = import.meta.env.VITE_STRIKE_URL;
 const apiKey = import.meta.env.VITE_STRIKE_API_KEY;
+import CountdownTimer from "./CountdownTImer";
 
 export const QuoteInvoice = () => {
     const [invoiceId, setInvoiceId] = useState('')
@@ -34,7 +35,7 @@ export const QuoteInvoice = () => {
     };
 
     return (
-        <fieldset>
+        <div>
             <legend>Quote from Strike Invoice</legend>
             <label>
                 <input 
@@ -46,12 +47,12 @@ export const QuoteInvoice = () => {
     
             {quote && 
             <>
-                <p>Expiration: {quote.expiration}</p>
                 <p>Quote id: {quote.quoteId}</p>
+                <CountdownTimer targetDate={quote.expiration} />
                 <button type="button" onClick={copyQuoteId}>Copy Quote Id</button>
                 <p>Lightning Invoice: {quote.lnInvoice.slice(0, 9)}...{quote.lnInvoice.slice(-10, quote.lnInvoice.length)}</p>
                 <button type="button" onClick={copyLnInv}>Copy Lightning Inv</button>
             </>}
-        </fieldset>
+        </div>
     )
 };

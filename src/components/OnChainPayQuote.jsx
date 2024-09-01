@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 const apiUrl = import.meta.env.VITE_STRIKE_URL;
 const apiKey = import.meta.env.VITE_STRIKE_API_KEY;
+import CountdownTimer from './CountdownTImer';
 
 export const OnChainPaymentQuote = ({ currency, totalUSD, totalBTC }) => {
     const [quote, setQuote] = useState(null);
@@ -82,7 +83,7 @@ export const OnChainPaymentQuote = ({ currency, totalUSD, totalBTC }) => {
     }
 
     return (
-    <fieldset>
+    <div>
         <legend>On Chain Quote</legend>
         <label>Bitcoin address: 
             <input
@@ -102,7 +103,7 @@ export const OnChainPaymentQuote = ({ currency, totalUSD, totalBTC }) => {
             <div key={tier.id}>
                 <p>{tier.estimatedDurationInMin}</p>
                 <p>Fee: {tier.estimatedFee.amount}{tier.estimatedFee.currency}</p>
-                <button onClick={() => setTier(tier.id)}>{tier.id === 'tier_fast' ? 'Fast' : tier.id === 'tier_standard' ? 'Standard' : 'Free'}</button>
+                <button onClick={() => setTier(tier)}>{tier.id === 'tier_fast' ? 'Fast' : tier.id === 'tier_standard' ? 'Standard' : 'Free'}</button>
             </div>
         ))}
         {quote && 
@@ -111,10 +112,10 @@ export const OnChainPaymentQuote = ({ currency, totalUSD, totalBTC }) => {
             <p>Fee: {quote.totalFee.amount}</p>
             <p>Total: {quote.totalAmount.amount}</p>
             <p>{quote.description}</p>
-            <p>Best Before: {quote.validUntil}</p>
+            <CountdownTimer targetDate={quote.validUntil}/>
             <button onClick={() => copyQuoteId(quote.paymentQuoteId)}>Copy Payment Quote</button>
         </>
         }
-    </fieldset>
+    </div>
     )
 };

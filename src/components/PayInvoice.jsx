@@ -3,11 +3,11 @@ import axios from "axios";
 const apiUrl = import.meta.env.VITE_STRIKE_URL;
 const apiKey = import.meta.env.VITE_STRIKE_API_KEY;
 
-export const PayStrikeInv = () => {
+export const PayStrikeInv = ({ quoteId, setQuoteId }) => {
     const [payment, setPayment] = useState(null);
-    const [quoteId, setQuoteId] = useState('');
-
+    
     const pay = async () => {
+        console.log(quoteId)
         try {
             const response = await axios.patch(`${apiUrl}/payment-quotes/${quoteId}/execute`, null, { 
                 headers: {
@@ -31,7 +31,7 @@ export const PayStrikeInv = () => {
     };
 
     return (
-        <fieldset>
+        <div>
             <legend>Pay Strike Invoice</legend>
             <label>Enter Strike Pay Quote id: 
                 <input 
@@ -43,8 +43,8 @@ export const PayStrikeInv = () => {
             {payment && 
             <>
                 <p>Payment staus: {payment.state} Id: {payment.paymentId}</p>
-                
+
             </>}
-        </fieldset>
+        </div>
     )
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { act, useEffect, useState } from 'react'
 import './App.css'
 import { Invoice } from './components/CreateInvoice';
 import { QuoteInvoice } from './components/QuoteInv';
@@ -12,11 +12,14 @@ import { UserInvoice } from './components/InvoiceFromHandle';
 import { LightningPaymentQuote } from './components/LightningPaymentQuote';
 import InvoiceHistory from './components/InvoiceHistory';
 import { OnChainPaymentQuote } from './components/OnChainPayQuote';
+import ExchangeCurrency from './components/ExchangeCurrency';
 
 
 function App() {
   const [activeTab, setActiveTab] = useState('getPaid');
   const [rates, setRates] = useState([]);
+
+  const [quoteId, setQuoteId] = useState('');
   
   const [totalUSD, setTotalUSD] = useState(0);
   const [totalBTC, setTotalBTC] = useState(0);
@@ -50,58 +53,83 @@ function App() {
     }
   }, [rates]);
 
-
+  // format and convert currency values
   useEffect(() => {              
-    if (currency === 'USD') {
+    if (rates.length > 0) {
+      if (currency === 'USD') {
 
-      const formattedUSD = Number(totalUSD).toFixed(2);
-      const usdToBTC = rateCalculator(formattedUSD, rates, 'USD', 'BTC');      
-      setTotalBTC(usdToBTC);
-      const btcToSats = usdToBTC * (100 * 1000000);
-      setTotalSats(btcToSats);
-
-    } else if (currency === 'BTC' ) {
-
-      const btcToUsd = rateCalculator(totalBTC, rates, 'BTC', 'USD');
-      const formattedUSD = Number(btcToUsd).toFixed(2)
-      setTotalUSD(formattedUSD);
-      const btcToSats = totalBTC *  (100 * 1000000);
-      setTotalSats(btcToSats);
-
-    } else { // SATS
-
-      const satsToBtc = (totalSats /  (100 * 1000000));
-      setTotalBTC(satsToBtc);
-      const btcToUsd = rateCalculator(satsToBtc, rates, 'BTC', 'USD');
-      const formattedUSD = Number(btcToUsd).toFixed(2)
-      setTotalUSD(formattedUSD);
-
-    }    
-  }, [currency, totalBTC, totalUSD, totalSats]);
+        // get btc from usd
+        const formattedUSD = Number(totalUSD).toFixed(2);
+        const usdToBTC = rateCalculator(formattedUSD, rates, 'USD', 'BTC');    
+  
+        // set btc
+        const formattedBTC = parseFloat(usdToBTC).toFixed(8);
+        setTotalBTC(formattedBTC);
+  
+        // convert to sats
+        const btcToSats = formattedBTC * 100000000; // 1 BTC = 100,000,000 SATS
+        setTotalSats(btcToSats);
+  
+      } else if (currency === 'BTC' ) {
+  
+        // get usd from btc
+        const btcToUsd = rateCalculator(totalBTC, rates, 'BTC', 'USD');
+        const formattedUSD = Number(btcToUsd).toFixed(2);
+  
+        // set usd
+        setTotalUSD(formattedUSD);
+  
+        // convert to sats and set
+        const btcToSats = totalBTC *  (100 * 1000000);
+        setTotalSats(btcToSats);
+  
+      } else { // SATS
+  
+        // conver to btc and set
+        const satsToBtc = (totalSats /  (100 * 1000000));
+        setTotalBTC(satsToBtc);
+        const btcToUsd = rateCalculator(satsToBtc, rates, 'BTC', 'USD');
+  
+        // get usd from btc and set
+        const formattedUSD = Number(btcToUsd).toFixed(2)
+        setTotalUSD(formattedUSD);
+  
+      }  
+    }
+  }, [currency, totalBTC, totalUSD, totalSats, rates]);
 
   
   return (
     <div>
+      <h1>{}</h1>
       <div className="navDiv">
         <button onClick={() => handleTabChange('getPaid')}>Get Paid</button>
-        <button onClick={() => handleTabChange('payOut')}>Pay Out</button>
+        <button onClick={() => handleTabChange('payOut')}>Pay Out</button>        
+        <button onClick={() => handleTabChange('exchangeCurrency')}>Exchange Currencies</button>
         <button onClick={() => handleTabChange('searchDiv')}>Search</button>
         <button onClick={() => handleTabChange('historyDiv')}>History</button>
-        <button onClick={() => handleTabChange('payOnChain')}>On Chain</button>
+        
       </div>
-      {(activeTab === 'payOut' || activeTab === 'getPaid' || activeTab === 'payOnChain')  &&
+      <div>
+      {(activeTab === 'payOut' || activeTab === 'payLightning' || activeTab === 'payOnChain' || activeTab === 'payBank') &&<>
+        <button onClick={() => handleTabChange('payLightning')}>Pay Lightning</button>
+        <button onClick={() => handleTabChange('payOnChain')}>On Chain</button>
+        <button onClick={() => handleTabChange('payBank')}>Bank</button>
+      </>}
+      </div>
+      {(activeTab === 'payLightning' || activeTab === 'payOnChain' || activeTab === 'getPaid' || activeTab === 'exchangeCurrency')  &&
        <div>
        {totalUSD > 0 && 
-        <> 
-          <p> {formattedUSD} </p> 
+        <>  
           <p>{formattedBTC}</p> 
           <p>{formattedSATS}</p>
+          <p>{formattedUSD}</p>
         </>}
        <CurrencySelect 
         currency={currency}
         setCurrency={setCurrency}
       />
-      <fieldset>
+      <div>
         <legend>Amount</legend>
       <label>
         <input 
@@ -115,7 +143,7 @@ function App() {
             setTotalSats(e.target.value)}
         />
       </label>     
-      </fieldset>
+      </div>
     </div>}
 
     {activeTab === 'getPaid' && 
@@ -124,29 +152,50 @@ function App() {
           currency={currency} 
           totalUSD={totalUSD}
           totalBTC={totalBTC}
-        />      
-        <QuoteInvoice />
+        />        
+         <QuoteInvoice />      
       </div>}
 
-    {activeTab === 'payOut' && 
-      <div className='payOut'>
+
+    {activeTab === 'payLightning' && 
+      <div className='payLightning'>
         <UserInvoice 
           currency={currency}
           totalUSD={totalUSD}
           totalBTC={totalBTC}
         />
-        <LightningPaymentQuote currency={currency} />
-        <PayStrikeInv />
+        <QuoteInvoice /> 
+        <LightningPaymentQuote 
+          currency={currency} 
+        />
+        <PayStrikeInv quoteId={quoteId} setQuoteId={setQuoteId}/> 
       </div>}
+
     {activeTab === 'payOnChain' && 
-      <div className="payOnChain">
-        <OnChainPaymentQuote currency={currency} totalUSD={totalUSD} totalBTC={totalBTC}/>
+    <div className="payOnChain">
+      <OnChainPaymentQuote 
+        currency={currency} 
+        totalUSD={totalUSD} 
+        totalBTC={totalBTC}
+      />
+      <PayStrikeInv quoteId={quoteId} setQuoteId={setQuoteId}/>
+    </div>
+    }
+
+    {activeTab === 'exchangeCurrency' && 
+      <div>
+        <ExchangeCurrency 
+          currency={currency}
+          totalUSD={totalUSD}
+          totalBTC={totalBTC}
+        />
+         
       </div>
     }
 
     {activeTab === 'payBank' &&
       <div>
-      {/* <BankPayout /> */}
+      <BankPayout />
         </div>}
 
     {activeTab === 'searchDiv' && 
@@ -154,11 +203,11 @@ function App() {
         <StrikeUser />
         <SearchInvoices />
        </div>}
-      {activeTab === 'historyDiv' &&
-        <div className="historyDiv">
-          <InvoiceHistory />
-          </div>
-      }
+    {activeTab === 'historyDiv' &&
+      <div className="historyDiv">
+        <InvoiceHistory />
+        </div>
+    }
     </div>
   )
 }
