@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import CountdownTimer from "./CountdownTImer";
-import { quoteFromInvoice } from "../../strikeApi";
+import { quoteInvoice } from "../../strikeApi";
 
 export const QuoteInvoice = ({ invoiceId, quote, setQuote }) => {    
     
     // Use invoice id to generate a new quote
     const fetchNewQuote = async () => {
        if (invoiceId !== '') {
-        const newQuote = await quoteFromInvoice(invoiceId);
+        const newQuote = await quoteInvoice(invoiceId);
         setQuote(newQuote);
        }
     };

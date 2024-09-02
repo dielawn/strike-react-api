@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
-import { createUserInvoice, executePay, lightningPayQuote } from "../../strikeApi";
-import { quoteFromInvoice } from "../../strikeApi";
-import { QuoteInvoice } from "./QuoteInv";
-import CountdownTimer from "./CountdownTImer";
+import { createHandleInvoice, executePay, quoteLightning, quoteInvoice } from "../../strikeApi";
 
 export const UserInvoice = ({ currency, totalUSD, totalBTC, totalSATS }) => {
 
     const [handle, setHandle] = useState('becke543');
     const [description, setDescription] = useState('test');
+    const [lnInvoice, setLnInvoice] = useState('');
+
     // set by invoice from handle
     const [invoice, setInvoice] = useState(null);
     // using invoice id sets quote in fetchNewQuote
@@ -29,13 +28,13 @@ export const UserInvoice = ({ currency, totalUSD, totalBTC, totalSATS }) => {
                 amount: currency === 'USD' ? totalUSD : totalBTC
             }
         }
-        const invFromHandle = await createUserInvoice(handle, data);
+        const invFromHandle = await createHandleInvoice(handle, data);
         setInvoice(invFromHandle)
     };
 
     const fetchNewQuote = async () => {
         if (invoice.invoiceId !== '') {
-         const newQuote = await quoteFromInvoice(invoice.invoiceId);
+         const newQuote = await quoteInvoice(invoice.invoiceId);
          setQuote(newQuote);
         }
      };
@@ -55,7 +54,7 @@ export const UserInvoice = ({ currency, totalUSD, totalBTC, totalSATS }) => {
             lnInvoice: inv,
             currency: formattedCurrency === 'SATS' ? 'BTC' : formattedCurrency
         } 
-        const payQuote = await lightningPayQuote(data);
+        const payQuote = await quoteLightning(data);
         console.log('payQuote',payQuote)
         setPayQuote(payQuote)
      };
@@ -64,31 +63,44 @@ export const UserInvoice = ({ currency, totalUSD, totalBTC, totalSATS }) => {
         if (quote !== null) {
             console.log('lnInv', quote.lnInvoice)
             const lnInv = quote.lnInvoice;
-            fetchPayQuote(lnInv)
+            fetchPayQuote(lnInv);
+            setLnInvoice(lnInv);
         }   
-    }, [quote])
+    }, [quote]);
 
     const payLightning = async () => {
-        const payment = await executePay(payQuote.paymentQuoteId);
-        console.log('payment', payment)
-        setPayData(payment)
-    }
+        if (payQuote) {
+            const payment = await executePay(payQuote.paymentQuoteId);
+            console.log('payment', payment)
+            setPayData(payment)
+        }        
+    };
 
     useEffect(() => {
         if (payData !== null || payData !== undefined) {
             console.log('pay data', payData)
         }
-    }, [payData])
+    }, [payData]);
 
-    const handlePay = () => {
+    const handlePay = async () => {
         const userConfirmed = confirm(`Pay ${currency === 'USD' ? `$${totalUSD}` : currency === 'BTC' ? `${totalBTC} btc` : `${totalSATS} sats`}, Execute?`);
         if (userConfirmed) {
-            payLightning();
+           await payLightning();
         } else {
             console.log('Payment canceled')
         }
     }
-   
+
+    useEffect(() => {
+        if (payQuote && totalBTC > 0) {
+            handlePay();
+        }
+    }, [payQuote]);
+
+    const copyLnInv = () => {
+        navigator.clipboard.writeText(lnInvoice)
+    }
+
     return (
         <div>
             <legend>Create an invoice on behalf of another user</legend>
@@ -104,15 +116,10 @@ export const UserInvoice = ({ currency, totalUSD, totalBTC, totalSATS }) => {
                     onChange={(e) => setHandle(e.target.value)}
                 />
             </label>
-            <button type='button' onClick={invoiceFromHandle}>Create Invoice</button>
-            {invoice && 
-                <>
-                    <p>{invoice.invoiceId}</p>    
-                    <button type='button' onClick={() => handlePay()}>Pay Invoice</button>
+            <button type='button' onClick={invoiceFromHandle}>Pay</button>
+            {lnInvoice !== '' && <button onClick={() => copyLnInv()}>Copy Lightning Invoice</button>}
           
-                </>
-            }
-           
+            {payData && <p>Payment: {payData.result} Status: {payData.state}</p>}
         </div>
     )
 }

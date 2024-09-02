@@ -1,27 +1,42 @@
-import axios from 'axios';
 import { useEffect, useState } from 'react';
-const apiUrl = import.meta.env.VITE_STRIKE_URL;
-const apiKey = import.meta.env.VITE_STRIKE_API_KEY;
-import { lightningPayQuote } from '../../strikeApi';
+import { quoteLightning, executePay } from '../../strikeApi';
 
 export const LightningPaymentQuote = ({ currency }) => {
+
     const [lnInvoice, setLnInvoice] = useState('');
-    const [payment, setPayment] = useState(null);
+    // using lnInvoice from quote sets payQuote in fetchPayQuote
+    const [payQuote, setPayQuote] = useState(null);
+    const [payData, setPayData] = useState(null);
     
+    // Post lnInvoice get payment quote
     const getPayQuote = async () => {
         const formattedCurrency = currency.toUpperCase();
         const data = {
             lnInvoice: lnInvoice,
             sourceCurrency: formattedCurrency === 'SATS' ? 'BTC' : formattedCurrency,
         }
-        const payQuote = await lightningPayQuote(data);
-        setLnInvoice(payQuote.lnInvoice)
+        const quote = await quoteLightning(data);
+        console.log(quote)
+        setPayQuote(quote)
     };
 
-    const copyQuoteId = () => {
-        navigator.clipboard.writeText(payment.paymentQuoteId)
-    };
+    useEffect(() => {
+        if (payQuote !== null && payQuote !== undefined) {        
+            handlePay();
+        }
+    }, [payQuote])
 
+    const handlePay = async () => {
+        const userConfirmed = confirm(`Pay ${currency === 'USD' ? `$${payQuote.amount.amount}` : `${payQuote.amount.amount} btc`}, Execute?`);
+        if (userConfirmed) {       
+                const payment = await executePay(payQuote.paymentQuoteId);
+                console.log('payment', payment)
+                setPayData(payment)
+            
+        } else {
+            console.log('Payment canceled')
+        }
+    }
 
     return (
         <div>
@@ -32,13 +47,12 @@ export const LightningPaymentQuote = ({ currency }) => {
                  onChange={(e) => setLnInvoice(e.target.value)}
                 />
             </label>
-            <button type='button' onClick={getPayQuote}>Get Pay Quote</button>
-            {payment &&
+            <button type='button' onClick={getPayQuote}>Pay Lightning Invoice</button>
+            {payData &&
             <>
-                <p>{payment.amount.currency === 'USD' ? `$${payment.amount.amount}` : `${payment.amount.amount} btc`}</p>
-                <p>{payment.description}</p>
+                <p>{payData.amount.currency === 'USD' ? `$${payData.amount.amount}` : `${payData.amount.amount} btc`}</p>
+                <p>{payData.description}</p>
                
-                <button type='button' onClick={copyQuoteId}>Copy Lightning Quote Id</button>
             </>
             }
         </div>

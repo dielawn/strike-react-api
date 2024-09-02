@@ -30,7 +30,7 @@ export const createInvoice = async (data) => {
 };
 
 // Generate quote from invoiceId
-export const quoteFromInvoice = async (invoiceId) => {
+export const quoteInvoice = async (invoiceId) => {
     try {
         const response = await axios.post(`${apiUrl}/invoices/${invoiceId}/quote`, null,{ 
             headers: HEADERS
@@ -45,7 +45,7 @@ export const quoteFromInvoice = async (invoiceId) => {
      }
 };
 
-export const createUserInvoice = async (handle, data) => {    
+export const createHandleInvoice = async (handle, data) => {    
     try {   
         const response = await axios.post(`${apiUrl}/invoices/handle/${handle}`, data, {
             headers: HEADERS
@@ -59,7 +59,7 @@ export const createUserInvoice = async (handle, data) => {
     }
 };
 
-export const lightningPayQuote = async (data) => {
+export const quoteLightning = async (data) => {
     try {
         const response = await axios.post(`${apiUrl}/payment-quotes/lightning`, data,{ 
             headers: HEADERS
@@ -83,8 +83,38 @@ export const executePay = async (quoteId) => {
         const responseData = response.data;
         console.log('Payment executed:', responseData);
         return responseData;
-        
+
     } catch (error) {
         console.error('Error ', error.response?.data || error.message);
     }
 };
+
+export const quoteOnChain = async (data) => {
+    try {
+        const response = await axios.post(`${apiUrl}/payment-quotes/onchain/tiers`, data, {
+            headers: HEADERS
+        })
+        const responseData = response.data
+        console.log('On chain quote:', responseData)
+        return responseData
+       
+    } catch (error) {
+         console.error('Error creating on chain tx quote:', error.response?.data || error.message);
+         throw error; 
+     }
+};
+
+export const quoteOnChainTier = async (data) => {
+    try {
+        const response = await axios.post(`${apiUrl}/payment-quotes/onchain`, data, {
+            headers: HEADERS
+        })
+        const responseData = response.data
+        console.log('On chain quote:', responseData)
+        return responseData
+
+    } catch (error) {
+         console.error('Error creating on chain tx quote:', error.response?.data || error.message);
+         throw error; 
+     }
+}

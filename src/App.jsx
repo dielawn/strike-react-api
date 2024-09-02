@@ -110,13 +110,15 @@ function App() {
         
       </div>
       <div>
-      {(activeTab === 'payOut' || activeTab === 'payLightning' || activeTab === 'payOnChain' || activeTab === 'payBank') &&<>
-        <button onClick={() => handleTabChange('payLightning')}>Pay Lightning</button>
+      {(activeTab === 'payOut' || activeTab === 'payHandle' || activeTab === 'payOnChain' || activeTab === 'payBank' || activeTab === 'payLightningInv') &&<>
+        <button onClick={() => handleTabChange('payLightningInv')}>Pay Lightning Invoice</button>
+        <button onClick={() => handleTabChange('payHandle')}>Pay Strike Handle</button>
+        
         <button onClick={() => handleTabChange('payOnChain')}>On Chain</button>
         <button onClick={() => handleTabChange('payBank')}>Bank</button>
       </>}
       </div>
-      {(activeTab === 'payLightning' || activeTab === 'payOnChain' || activeTab === 'getPaid' || activeTab === 'exchangeCurrency')  &&
+      {(activeTab === 'payHandle' || activeTab === 'payOnChain' || activeTab === 'getPaid' || activeTab === 'exchangeCurrency')  &&
        <div>
        {totalUSD > 0 && 
         <>  
@@ -156,16 +158,19 @@ function App() {
       </div>}
 
 
-    {activeTab === 'payLightning' && 
-      <div className='payLightning'>
+    {activeTab === 'payHandle' && 
+      <div className='payHandle'>
         <UserInvoice 
           currency={currency}
           totalUSD={totalUSD}
           totalBTC={totalBTC}
           totalSATS={totalSats}
-        />
-       
-       
+        />      
+      </div>}
+
+      {activeTab === 'payLightningInv' && 
+      <div>
+        <LightningPaymentQuote currency={currency} totalUSD={totalUSD} totalBTC={totalBTC} totalSATS={totalSats}/>
       </div>}
 
     {activeTab === 'payOnChain' && 
@@ -175,7 +180,7 @@ function App() {
         totalUSD={totalUSD} 
         totalBTC={totalBTC}
       />
-      <PayStrikeInv quoteId={quoteId} setQuoteId={setQuoteId}/>
+     
     </div>
     }
 

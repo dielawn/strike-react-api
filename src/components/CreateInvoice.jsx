@@ -6,6 +6,7 @@ import { QuoteInvoice } from './QuoteInv';
 const Invoice = ({ currency, totalUSD, totalBTC }) => {
     const [invoice, setInvoice] = useState(null);
     const [description, setDescription] = useState('');
+    const [quote, setQuote] = useState(null);
     
     const createNewInvoice = async () => {
         console.log(description, currency, totalUSD, totalBTC)
@@ -27,6 +28,7 @@ const Invoice = ({ currency, totalUSD, totalBTC }) => {
        setInvoice(newInv)
     };
 
+
     return (
         <div>
             <legend>Create Strike Invoice</legend>      
@@ -42,7 +44,8 @@ const Invoice = ({ currency, totalUSD, totalBTC }) => {
             {invoice && 
             <>
             <p>Invoice Id: {invoice.invoiceId}</p>
-             <QuoteInvoice invoiceId={invoice.invoiceId} />
+             <QuoteInvoice invoiceId={invoice.invoiceId} quote={quote} setQuote={setQuote} />
+            
             </>}
         </div>
     )
