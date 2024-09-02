@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-const apiUrl = import.meta.env.VITE_STRIKE_URL;
-const apiKey = import.meta.env.VITE_STRIKE_API_KEY;
+import { exchangeRates } from '../../strikeApi';
 
 export const PriceConverter = ({ totalUSD, totalBTC, setTotalBTC, currency }) => {
   const [rates, setRates] = useState([]);
@@ -9,15 +7,9 @@ export const PriceConverter = ({ totalUSD, totalBTC, setTotalBTC, currency }) =>
 
   const getExchangeRates = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/rates/ticker`, { 
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`, 
-        },    
-      })
-      const responseData = response.data
-      console.log('Exchange rate:', responseData)
-      setRates(responseData)
+      const newRates = await exchangeRates()
+      console.log('new rates', newRates)
+      setRates(newRates)
           
     } catch (error) {
         console.error('Error ', error.response?.data || error.message)

@@ -1,23 +1,24 @@
-import { act, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import Invoice from './components/CreateInvoice';
-import { StrikeUser } from './components/StrikeProfile';
-import { SearchInvoices } from './components/SearchInvoice';
-import { CurrencySelect } from './components/CurrencySelect';
-import { BankPayout } from './components/BankPayout';
-import { PayStrikeInv } from './components/PayInvoice';
-import { getExchangeRates, rateCalculator } from '../utils';
-import { UserInvoice } from './components/InvoiceFromHandle';
-import { LightningPaymentQuote } from './components/LightningPaymentQuote';
+import StrikeUser from './components/StrikeProfile';
+import SearchInvoices from './components/SearchInvoice';
+import CurrencySelect from './components/CurrencySelect';
+import BankPayout from './components/BankPayout';
+import UserInvoice from './components/InvoiceFromHandle';
+import LightningPaymentQuote from './components/LightningPaymentQuote';
 import InvoiceHistory from './components/InvoiceHistory';
-import { OnChainPaymentQuote } from './components/OnChainPayQuote';
+import OnChainPaymentQuote from './components/OnChainPayQuote';
 import ExchangeCurrency from './components/ExchangeCurrency';
+import { exchangeRates } from '../strikeApi';
+import { rateCalculator } from '../utils';
 
 
 function App() {
-  const [activeTab, setActiveTab] = useState('payOut');
+  const [activeTab, setActiveTab] = useState('exchangeCurrency');
   const [rates, setRates] = useState([]);
 
+  const [handle, setHandle] = useState('dmercill');
   const [quoteId, setQuoteId] = useState('');
   
   const [totalUSD, setTotalUSD] = useState(0);
@@ -25,17 +26,40 @@ function App() {
   const [totalSats, setTotalSats] = useState(0);
 
   const [currency, setCurrency] = useState('SATS');
+  const [currencies, setCurrencies] = useState([])
 
   const formattedUSD = `$${Number(totalUSD).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
-  const formattedBTC = `${(totalBTC).toString().slice(0, 10)} btc`
+  const formattedBTC = `${Number(totalBTC).toString().slice(0, 10)} btc`
   const formattedSATS = `${(totalSats).toLocaleString().slice(0, 12)} sats`
+
+  // User available and invoicable currencies
+  // useEffect(() => {
+
+  //   const fetchCurrencies = async () => {
+  //     const profileData = await getHandleProfile(handle)
+  //     const tempArray = profileData.currencies
+  //       .filter((curr) => curr.isAvailable && curr.isInvoiceable)
+  //       .map((curr) => curr.currency);
+
+  //       setCurrencies(tempArray)
+       
+  //   }
+  //   if (handle !== '') {
+  //     fetchCurrencies();
+  //   }
+    
+  // }, [handle])
+
+  // useEffect(() => {
+  //   console.log('currencies', currencies)
+  // }, [currencies])
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
   };
 
   const fetchRates = async () => {
-    const ratesQuote = await getExchangeRates();
+    const ratesQuote = await exchangeRates();
     setRates(ratesQuote);
   };
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { createHandleInvoice, executePay, quoteLightning, quoteInvoice } from "../../strikeApi";
 
-export const UserInvoice = ({ currency, totalUSD, totalBTC, totalSATS }) => {
+const UserInvoice = ({ currency, totalUSD, totalBTC, totalSATS }) => {
 
     const [handle, setHandle] = useState('becke543');
     const [description, setDescription] = useState('test');
@@ -17,6 +17,7 @@ export const UserInvoice = ({ currency, totalUSD, totalBTC, totalSATS }) => {
     // using paymentQuoteId from payQuote execute pay setsData
     const [payData, setPayData] = useState(null);
 
+    // Create a new invoice on behalf of another strike user
     const invoiceFromHandle = async () => {
         const correlationId = uuidv4();
         const formattedCurrency = currency.toUpperCase();
@@ -32,6 +33,7 @@ export const UserInvoice = ({ currency, totalUSD, totalBTC, totalSATS }) => {
         setInvoice(invFromHandle)
     };
 
+    // Set quote from invoice id
     const fetchNewQuote = async () => {
         if (invoice.invoiceId !== '') {
          const newQuote = await quoteInvoice(invoice.invoiceId);
@@ -39,7 +41,7 @@ export const UserInvoice = ({ currency, totalUSD, totalBTC, totalSATS }) => {
         }
      };
 
-     // invoice id to get quote
+     // Quote request when invoice is valie
      useEffect(() => {
         console.log('invoice', invoice)
          if (invoice !== undefined && invoice !== null) {
@@ -58,7 +60,7 @@ export const UserInvoice = ({ currency, totalUSD, totalBTC, totalSATS }) => {
         console.log('payQuote',payQuote)
         setPayQuote(payQuote)
      };
-
+     // Set lightning invoice from quote
      useEffect(() => {        
         if (quote !== null) {
             console.log('lnInv', quote.lnInvoice)
@@ -67,7 +69,7 @@ export const UserInvoice = ({ currency, totalUSD, totalBTC, totalSATS }) => {
             setLnInvoice(lnInv);
         }   
     }, [quote]);
-
+    // Execute pay lightning ivoice
     const payLightning = async () => {
         if (payQuote) {
             const payment = await executePay(payQuote.paymentQuoteId);
@@ -83,6 +85,7 @@ export const UserInvoice = ({ currency, totalUSD, totalBTC, totalSATS }) => {
     }, [payData]);
 
     const handlePay = async () => {
+        
         const userConfirmed = confirm(`Pay ${currency === 'USD' ? `$${totalUSD}` : currency === 'BTC' ? `${totalBTC} btc` : `${totalSATS} sats`}, Execute?`);
         if (userConfirmed) {
            await payLightning();
@@ -122,4 +125,6 @@ export const UserInvoice = ({ currency, totalUSD, totalBTC, totalSATS }) => {
             {payData && <p>Payment: {payData.result} Status: {payData.state}</p>}
         </div>
     )
-}
+};
+
+export default UserInvoice

@@ -1,37 +1,54 @@
 import { useEffect, useState } from "react";
-import axios from 'axios';
-const apiUrl = import.meta.env.VITE_STRIKE_URL;
-const apiKey = import.meta.env.VITE_STRIKE_API_KEY;
+import { getHandleProfile } from "../../strikeApi";
 
-export const StrikeUser = () => {
+const StrikeUser = () => {
     const [profile, setProfile] = useState(null);
     const [handle, setHandle] = useState('');
+    const [error, setError] = useState(null);
 
     const getProfile = async () => {
-        try {
-            const response = await axios.get(`${apiUrl}/accounts/handle/${handle}/profile`, { 
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`, 
-                },          
-            });
-            const responseData = response.data
-            console.log(`Acct Profile ${handle}:`, responseData)
-            setProfile(responseData);
-                
-        } catch (error) {
-            console.error('Error ', error.response?.data || error.message)
+       try {
+        if (handle !== '') {
+            const handleProfile = await getHandleProfile(handle)
+            if (typeof handleProfile === 'string' ) {
+                setError(handleProfile)
+            } else {
+                setProfile(handleProfile)
+            }
+            console.log(typeof(handleProfile))
+            
         }
+        
+       } catch (error) {
+        console.error("Error fetching handle profile:", error);
+        setError(error.message); // Set the error message
+       }
     };
     
     useEffect(() => {
-        if (profile !== null) {
+        if (profile !== null && profile !== undefined) {
             console.log(profile.canReceive)
         }
     }, [profile])
+
+    useEffect(() => {
+        if (error !== null) {
+            const timeout = setTimeout(() => {
+                setError(null)
+            }, 5000)
+            return () => clearTimeout(timeout); 
+        }
+        
+    }, [error])
     
     return (
+        
         <div>
+        {error ? (
+          <p>Error: {error}</p> // Display error message
+        ) : (
+          <div>
+            <div>
             <legend>Get user profile</legend>
             <label>User Handle
             <input 
@@ -40,7 +57,7 @@ export const StrikeUser = () => {
             />
             </label>
             <button type="button" onClick={getProfile}>Get User Profile</button>
-            {profile && 
+            {(profile && profile !== undefined || profile !== null) && 
                 <fieldset>
                     <legend>Strike User</legend>
                     <h3>{handle}</h3>
@@ -55,7 +72,13 @@ export const StrikeUser = () => {
                     <p>User id: {profile.id}</p>
                 </fieldset>
             }
+            
         </div>
+          </div>
+        )}
+      </div>
 
     )
-}
+};
+
+export default StrikeUser

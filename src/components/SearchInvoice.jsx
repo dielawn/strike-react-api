@@ -1,51 +1,77 @@
-import { useState } from "react";
-import axios from "axios";
-const apiUrl = import.meta.env.VITE_STRIKE_URL;
-const apiKey = import.meta.env.VITE_STRIKE_API_KEY;
+import { useEffect, useState } from "react";
+import { searchInvoice } from "../../strikeApi";
 
-export const SearchInvoices = () => {
+ const SearchInvoices = () => {
     const [searchedInvId, setSearchedInvId] = useState('');
-    const [foundInvoice, setFoundInvoiceId] = useState('');
+    const [foundInvoice, setFoundInvoiceId] = useState(null);
+    const [error, setError] = useState(null);
 
-    const searchInvoices = async () => {
+    const search = async () => {
         try {
-            const response = await axios.get(`${apiUrl}/invoices/${searchedInvId}`, { 
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`, 
-                },    
-            })
-            const responseData = response.data
-            console.log('Invoice:', responseData)
-            setFoundInvoiceId(responseData)
+            if (searchedInvId !== '') {
+               const results = await searchInvoice(searchedInvId)
+               if (typeof results === 'string') {
+                setError(results)
+               } else {
+                console.log('search results', results)
+                setFoundInvoiceId(results)
+               }
+            }           
                 
         } catch (error) {
-            console.error('Error ', error.response?.data || error.message)
+            console.error('Error:', error.response?.data || error.message);
+            setError(error.message || 'An error occurred while searching for the invoice.');
         }
     };
 
+    useEffect(() => {
+        if (foundInvoice) {
+            console.log('found', foundInvoice)
+        }
+        
+    }, [foundInvoice])
+
+    useEffect(() => {
+        if (error !== null) {
+            const timeout = setTimeout(() => {
+                setError(null)
+            }, 5000)
+            return () => clearTimeout(timeout); 
+        }
+        
+    }, [error])
+
     return (
         <div>
-            <legend>Search by invoice id</legend>
-            <label>Invoice Id
-                <input 
-                    value={searchedInvId}
-                    onChange={(e) => setSearchedInvId(e.target.value)}
-                />
-            </label>
-            <button type="button" onClick={searchInvoices}>Search</button>
-            {foundInvoice && 
-            <>
-                <p>{foundInvoice.amount.currency === 'USD' ? 
-                    `$${foundInvoice.amount.amount}` 
-                    : 
-                    `${foundInvoice.amount.amount} btc` }
-                </p>
-                <p>{foundInvoice.description}</p>
-                <p>{foundInvoice.created}</p>
-                <p>{foundInvoice.state}</p>
-            </>
+            {error ? (
+                <p>Error: {error}</p> // Display error message
+                ) : (
+                <div>
+                    <legend>Search by invoice id</legend>
+                    <label>Invoice Id
+                        <input 
+                            value={searchedInvId}
+                            onChange={(e) => setSearchedInvId(e.target.value)}
+                        />
+                    </label>
+                    <button type="button" onClick={search}>Search</button>
+                    {(foundInvoice !== null && foundInvoice !== undefined) &&
+                    <>
+                        <p>{foundInvoice.amount.currency === 'USD' ? 
+                            `$${foundInvoice.amount.amount}` 
+                            : 
+                            `${foundInvoice.amount.amount} btc` }
+                        </p>
+                        <p>{foundInvoice.description}</p>
+                        <p>{foundInvoice.created}</p>
+                        <p>{foundInvoice.state}</p>
+                    </>
             }
+                </div>
+                )}
+            
         </div>
     )
 };
+
+export default SearchInvoices

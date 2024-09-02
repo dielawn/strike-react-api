@@ -3,7 +3,7 @@ import axios from "axios";
 const apiUrl = import.meta.env.VITE_STRIKE_URL;
 const apiKey = import.meta.env.VITE_STRIKE_API_KEY;
 
-export const BankPayout = () => {
+const BankPayout = () => {
     const [confirmation, setConfirmation] = useState(null);
     const [transferType, setTransferType] = useState('ACH');
     const [accountNumber, setAccountNumber] = useState('');
@@ -237,4 +237,6 @@ export const BankPayout = () => {
         </div>
     );
 };
+
+export default BankPayout
 

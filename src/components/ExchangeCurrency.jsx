@@ -1,9 +1,5 @@
-import { useEffect, useState } from "react";
-import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid';
-const apiUrl = import.meta.env.VITE_STRIKE_URL;
-const apiKey = import.meta.env.VITE_STRIKE_API_KEY;
-
+import { useState } from "react";
+import { quoteExchange, executeExchange } from "../../strikeApi";
 import CountdownTimer from '../components/CountdownTImer';
 
 const ExchangeCurrency = ({ currency, totalUSD, totalBTC }) => {
@@ -13,32 +9,20 @@ const ExchangeCurrency = ({ currency, totalUSD, totalBTC }) => {
     const [confirmation, setConfirmation] = useState(null);
 
     const exchangeOptions = [['USD', 'BTC'], ['BTC', 'USD']]
-
-
+    
     const getExchangeQuote = async () => {
 
         const data = {
             sell: sellCurrency,
             buy: buyCurrency,
             amount: {
-                currency: sellCurrency === 'SATS' ? 'BTC' : sellCurrency,
-                amount: sellCurrency === 'USD' ? totalUSD : totalBTC
+                amount: sellCurrency === 'USD' ? totalUSD : totalBTC,
+                currency: sellCurrency === 'SATS' ? 'BTC' : sellCurrency
             }
         }
-        try {
-            const response = await axios.post(`${apiUrl}/currency-exchange-quotes`, data, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`, 
-                },   
-            })
-            const responseData = response.data
-            console.log('exchange quote', responseData)
-            setExchangeQuote(responseData)
-
-        } catch (error) {
-            console.error('Error ', error.response?.data || error.message);
-        }
+        const quote = await quoteExchange(data);
+        console.log('exchange quote', quote)
+        setExchangeQuote(quote)
     };
 
     const handleCurrencyChange = (event) => {
@@ -47,33 +31,16 @@ const ExchangeCurrency = ({ currency, totalUSD, totalBTC }) => {
         setBuyCurrency(selectedOption[1]);
     };
 
-    const executeExchange = async (quoteId) => {
-        console.log(quoteId)
+    const handleExchange = async () => {
+        
         try {
-            const response = await axios.patch(`${apiUrl}/currency-exchange-quotes/${quoteId}/execute`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`, 
-                },    
-            })
-            const responseData = response.data
-            console.log('Executed exchange', responseData)
-            setConfirmation(responseData)
-    
-        } catch (error) {
-            console.error('Error ', error.response?.data || error.message);
-        }
-    }
-
-    const handleExchange = async (id) => {
-        try {
-            const executedEx = await executeExchange(id);
+            const executedEx = await executeExchange(exchangeQuote.id);
+            console.log('executed exchange', executedEx)
             setConfirmation(executedEx);
         } catch (error) {
             console.error('Error ', error.response?.data || error.message);
         }       
-        
-    }
+    };
 
     return (
         <div>
@@ -98,9 +65,13 @@ const ExchangeCurrency = ({ currency, totalUSD, totalBTC }) => {
                     <p>Source: {exchangeQuote.source.amount} {exchangeQuote.source.currency}</p>
                     <p>Target: {exchangeQuote.target.amount} {exchangeQuote.target.currency}</p>
                     <p>Best Before:</p> <CountdownTimer targetDate={exchangeQuote.validUntil}/>
-                    <button onClick={() => handleExchange(exchangeQuote.id)}>Exchange</button>
+                    <button onClick={async () => await handleExchange()}>Exchange</button>
                 </div>
             )}
+            {confirmation && 
+            <>
+              
+            </>}
         </div>
     );
 };

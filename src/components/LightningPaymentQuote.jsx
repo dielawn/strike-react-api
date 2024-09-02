@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { quoteLightning, executePay } from '../../strikeApi';
 
-export const LightningPaymentQuote = ({ currency }) => {
+const LightningPaymentQuote = ({ currency }) => {
 
     const [lnInvoice, setLnInvoice] = useState('');
     // using lnInvoice from quote sets payQuote in fetchPayQuote
@@ -20,12 +20,14 @@ export const LightningPaymentQuote = ({ currency }) => {
         setPayQuote(quote)
     };
 
+    // Execute pay when payQuote is valid
     useEffect(() => {
         if (payQuote !== null && payQuote !== undefined) {        
             handlePay();
         }
     }, [payQuote])
 
+    // Confirm or cancel pay 
     const handlePay = async () => {
         const userConfirmed = confirm(`Pay ${currency === 'USD' ? `$${payQuote.amount.amount}` : `${payQuote.amount.amount} btc`}, Execute?`);
         if (userConfirmed) {       
@@ -57,4 +59,6 @@ export const LightningPaymentQuote = ({ currency }) => {
             }
         </div>
     )
-}
+};
+
+export default LightningPaymentQuote

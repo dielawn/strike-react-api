@@ -1,23 +1,14 @@
 import { useState } from "react";
-import axios from "axios";
-const apiUrl = import.meta.env.VITE_STRIKE_URL;
-const apiKey = import.meta.env.VITE_STRIKE_API_KEY;
+import { payPaymentQuote } from "../../strikeApi";
 
-export const PayStrikeInv = ({ quoteId, setQuoteId }) => {
-    const [payment, setPayment] = useState(null);
+const PayStrikeInv = ({ quoteId, setQuoteId }) => {
+    const [payData, setPayData] = useState(null);
     
     const pay = async () => {
         console.log(quoteId)
         try {
-            const response = await axios.patch(`${apiUrl}/payment-quotes/${quoteId}/execute`, null, { 
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`, 
-                },     
-            });
-            const responseData = response.data;
-            console.log('Payment executed:', responseData);
-            setPayment(responseData);
+            const payment = await payPaymentQuote(quoteId);
+            setPayData(payment);
         } catch (error) {
             console.error('Error ', error.response?.data || error.message);
         }
@@ -40,11 +31,13 @@ export const PayStrikeInv = ({ quoteId, setQuoteId }) => {
                 />
             </label>
             <button type="button" onClick={handlePay}>Pay</button>
-            {payment && 
+            {payData && 
             <>
-                <p>Payment staus: {payment.state} Id: {payment.paymentId}</p>
+                <p>Payment staus: {payData.state} Id: {payData.paymentId}</p>
 
             </>}
         </div>
     )
 };
+
+export default PayStrikeInv

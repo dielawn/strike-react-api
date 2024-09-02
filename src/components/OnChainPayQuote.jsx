@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import CountdownTimer from './CountdownTImer';
 import { quoteOnChain, quoteOnChainTier } from '../../strikeApi';
 
-export const OnChainPaymentQuote = ({ currency, totalUSD, totalBTC }) => {
+const OnChainPaymentQuote = ({ currency, totalUSD, totalBTC }) => {
     const [payQuote, setPayQuote] = useState(null);
     const [payData, setPayData] = useState(null);
     const [tier, setTier] = useState('tier_free');
@@ -11,8 +11,8 @@ export const OnChainPaymentQuote = ({ currency, totalUSD, totalBTC }) => {
     const [description, setDescription] = useState('');
     const formattedCurrency = currency.toUpperCase();
 
-    const onChainQuotes = async () => {
-                
+    // Returns quotes for each pay tier
+    const onChainQuotes = async () => {                
         const data = {
             btcAddress,
             amount: {
@@ -129,3 +129,5 @@ export const OnChainPaymentQuote = ({ currency, totalUSD, totalBTC }) => {
     </div>
     )
 };
+
+export default OnChainPaymentQuote

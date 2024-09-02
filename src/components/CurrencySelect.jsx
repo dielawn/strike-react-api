@@ -1,4 +1,4 @@
-export const CurrencySelect = ({ currency, setCurrency }) => {
+const CurrencySelect = ({ currency, setCurrency }) => {
     const currencies = ['USD', 'BTC', 'SATS' ];
     
     const handleCurrencyChange = (event) => {
@@ -23,3 +23,5 @@ export const CurrencySelect = ({ currency, setCurrency }) => {
         </div>
     );
 };
+
+export default CurrencySelect
