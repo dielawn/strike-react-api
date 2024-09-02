@@ -2,33 +2,20 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 const apiUrl = import.meta.env.VITE_STRIKE_URL;
 const apiKey = import.meta.env.VITE_STRIKE_API_KEY;
+import { lightningPayQuote } from '../../strikeApi';
 
 export const LightningPaymentQuote = ({ currency }) => {
     const [lnInvoice, setLnInvoice] = useState('');
     const [payment, setPayment] = useState(null);
-    const [fee, setFee] = useState(0);
-
+    
     const getPayQuote = async () => {
         const formattedCurrency = currency.toUpperCase();
         const data = {
             lnInvoice: lnInvoice,
             sourceCurrency: formattedCurrency === 'SATS' ? 'BTC' : formattedCurrency,
         }
-        try {
-            const response = await axios.post(`${apiUrl}/payment-quotes/lightning`, data,{ 
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`, 
-                },     
-             })
-             const responseData = response.data
-             console.log('Lightning quote created:', responseData)
-             setPayment(responseData)
-    
-         } catch (error) {
-             console.error('Error creating new lightning quote:', error.response?.data || error.message);
-             throw error; 
-         }
+        const payQuote = await lightningPayQuote(data);
+        setLnInvoice(payQuote.lnInvoice)
     };
 
     const copyQuoteId = () => {

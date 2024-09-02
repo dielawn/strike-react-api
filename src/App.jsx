@@ -1,7 +1,6 @@
 import { act, useEffect, useState } from 'react'
 import './App.css'
-import { Invoice } from './components/CreateInvoice';
-import { QuoteInvoice } from './components/QuoteInv';
+import Invoice from './components/CreateInvoice';
 import { StrikeUser } from './components/StrikeProfile';
 import { SearchInvoices } from './components/SearchInvoice';
 import { CurrencySelect } from './components/CurrencySelect';
@@ -16,7 +15,7 @@ import ExchangeCurrency from './components/ExchangeCurrency';
 
 
 function App() {
-  const [activeTab, setActiveTab] = useState('getPaid');
+  const [activeTab, setActiveTab] = useState('payOut');
   const [rates, setRates] = useState([]);
 
   const [quoteId, setQuoteId] = useState('');
@@ -25,7 +24,7 @@ function App() {
   const [totalBTC, setTotalBTC] = useState(0);
   const [totalSats, setTotalSats] = useState(0);
 
-  const [currency, setCurrency] = useState('BTC');
+  const [currency, setCurrency] = useState('SATS');
 
   const formattedUSD = `$${Number(totalUSD).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
   const formattedBTC = `${(totalBTC).toString().slice(0, 10)} btc`
@@ -153,7 +152,7 @@ function App() {
           totalUSD={totalUSD}
           totalBTC={totalBTC}
         />        
-         <QuoteInvoice />      
+         {/* <QuoteInvoice />       */}
       </div>}
 
 
@@ -163,12 +162,10 @@ function App() {
           currency={currency}
           totalUSD={totalUSD}
           totalBTC={totalBTC}
+          totalSATS={totalSats}
         />
-        <QuoteInvoice /> 
-        <LightningPaymentQuote 
-          currency={currency} 
-        />
-        <PayStrikeInv quoteId={quoteId} setQuoteId={setQuoteId}/> 
+       
+       
       </div>}
 
     {activeTab === 'payOnChain' && 

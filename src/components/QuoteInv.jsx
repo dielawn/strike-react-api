@@ -1,55 +1,50 @@
 import { useEffect, useState } from "react";
-import axios from 'axios';
-const apiUrl = import.meta.env.VITE_STRIKE_URL;
-const apiKey = import.meta.env.VITE_STRIKE_API_KEY;
 import CountdownTimer from "./CountdownTImer";
+import { quoteFromInvoice } from "../../strikeApi";
 
-export const QuoteInvoice = () => {
-    const [invoiceId, setInvoiceId] = useState('')
-    const [quote, setQuote] = useState(null);
-
-    const quoteFromInvoice = async () => {
-        try {
-            const response = await axios.post(`${apiUrl}/invoices/${invoiceId}/quote`, null,{ 
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`, 
-                },       
-             })
-             const responseData = response.data
-             console.log('Quote created:', responseData)
-             setQuote(responseData)
+export const QuoteInvoice = ({ invoiceId, quote, setQuote }) => {    
     
-         } catch (error) {
-             console.error('Error creating new quote:', error.response?.data || error.message);
-             throw error; 
-         }
+    // Use invoice id to generate a new quote
+    const fetchNewQuote = async () => {
+       if (invoiceId !== '') {
+        const newQuote = await quoteFromInvoice(invoiceId);
+        setQuote(newQuote);
+       }
     };
+
+    useEffect(() => {
+        if (invoiceId !== '' && invoiceId !== undefined) {
+            fetchNewQuote();
+        }
+    }, [invoiceId])
+
+    // New Quote on expiration
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (quote) {
+                const now = new Date();
+                const exp = Date(quote.expiration)
+                if (now > exp) {
+                    clearInterval(interval)
+                    fetchNewQuote();
+                    console.log('Quote renewed')
+                }
+            }
+        }, 60000)
+    }, [quote]);
     
     const copyLnInv = () => {
         navigator.clipboard.writeText(quote.lnInvoice)
     };
 
-    const copyQuoteId = () => {
-        navigator.clipboard.writeText(quote.quoteId)
-    };
 
     return (
         <div>
-            <legend>Quote from Strike Invoice</legend>
-            <label>
-                <input 
-                    value={invoiceId}
-                    onChange={(e) => setInvoiceId(e.target.value)}
-                />
-            </label>
-            <button type="button" onClick={quoteFromInvoice} >Create Quote</button>
-    
+            <legend>Quote from Strike Invoice</legend>   
             {quote && 
             <>
                 <p>Quote id: {quote.quoteId}</p>
                 <CountdownTimer targetDate={quote.expiration} />
-                <button type="button" onClick={copyQuoteId}>Copy Quote Id</button>
                 <p>Lightning Invoice: {quote.lnInvoice.slice(0, 9)}...{quote.lnInvoice.slice(-10, quote.lnInvoice.length)}</p>
                 <button type="button" onClick={copyLnInv}>Copy Lightning Inv</button>
             </>}
