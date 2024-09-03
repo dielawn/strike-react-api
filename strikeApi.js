@@ -234,6 +234,20 @@ const exchangeRates = async () => {
     }
   };
 
+const getBalances = async () => {
+    try {
+        const response = await axios.get(`${apiUrl}/balances`, { 
+            headers: HEADERS
+        })
+        const responseData = response.data
+        console.log('Balances', responseData)
+        return responseData
+            
+      } catch (error) {
+          console.error('Error ', error.response?.data || error.message)
+      }
+};
+
 
 
 export {
@@ -251,5 +265,6 @@ export {
     allInvoiceByStatus,
     payPaymentQuote,
     exchangeRates,
+    getBalances
 
 }

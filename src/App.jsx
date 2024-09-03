@@ -10,6 +10,7 @@ import LightningPaymentQuote from './components/LightningPaymentQuote';
 import InvoiceHistory from './components/InvoiceHistory';
 import OnChainPaymentQuote from './components/OnChainPayQuote';
 import ExchangeCurrency from './components/ExchangeCurrency';
+import AcctBalances from './components/Balances';
 import { exchangeRates } from '../strikeApi';
 import { rateCalculator } from '../utils';
 
@@ -124,7 +125,7 @@ function App() {
   
   return (
     <div>
-      <h1>{}</h1>
+      <AcctBalances />
       <div className="navDiv">
         <button onClick={() => handleTabChange('getPaid')}>Get Paid</button>
         <button onClick={() => handleTabChange('payOut')}>Pay Out</button>        
@@ -178,7 +179,6 @@ function App() {
           totalUSD={totalUSD}
           totalBTC={totalBTC}
         />        
-         {/* <QuoteInvoice />       */}
       </div>}
 
 
@@ -194,7 +194,12 @@ function App() {
 
       {activeTab === 'payLightningInv' && 
       <div>
-        <LightningPaymentQuote currency={currency} totalUSD={totalUSD} totalBTC={totalBTC} totalSATS={totalSats}/>
+        <LightningPaymentQuote 
+          currency={currency} 
+          totalUSD={totalUSD} 
+          totalBTC={totalBTC} 
+          totalSATS={totalSats}
+        />
       </div>}
 
     {activeTab === 'payOnChain' && 
@@ -203,8 +208,7 @@ function App() {
         currency={currency} 
         totalUSD={totalUSD} 
         totalBTC={totalBTC}
-      />
-     
+      />     
     </div>
     }
 
@@ -214,15 +218,14 @@ function App() {
           currency={currency}
           totalUSD={totalUSD}
           totalBTC={totalBTC}
-        />
-         
+        />         
       </div>
     }
 
     {activeTab === 'payBank' &&
       <div>
-      <BankPayout />
-        </div>}
+        <BankPayout />
+      </div>}
 
     {activeTab === 'searchDiv' && 
       <div className='searchDiv'>
@@ -232,7 +235,7 @@ function App() {
     {activeTab === 'historyDiv' &&
       <div className="historyDiv">
         <InvoiceHistory />
-        </div>
+      </div>
     }
     </div>
   )

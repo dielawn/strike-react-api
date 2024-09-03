@@ -40,7 +40,8 @@ const StrikeUser = () => {
         }
         
     }, [error])
-    
+
+
     return (
         
         <div>
@@ -76,6 +77,7 @@ const StrikeUser = () => {
         </div>
           </div>
         )}
+
       </div>
 
     )
