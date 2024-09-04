@@ -11,6 +11,7 @@ import InvoiceHistory from './components/InvoiceHistory';
 import OnChainPaymentQuote from './components/OnChainPayQuote';
 import ExchangeCurrency from './components/ExchangeCurrency';
 import AcctBalances from './components/Balances';
+
 import { exchangeRates } from '../strikeApi';
 import { rateCalculator } from '../utils';
 
@@ -19,7 +20,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('exchangeCurrency');
   const [rates, setRates] = useState([]);
 
-  const [handle, setHandle] = useState('dmercill');
+  const [handle, setHandle] = useState('becke543');
   const [quoteId, setQuoteId] = useState('');
   
   const [totalUSD, setTotalUSD] = useState(0);

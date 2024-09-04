@@ -222,17 +222,17 @@ const payPaymentQuote = async (quoteId) => {
 
 const exchangeRates = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/rates/ticker`, { 
-          headers: HEADERS
-      })
-      const responseData = response.data
-      console.log('Exchange rate:', responseData)
-      return responseData
-          
+    const response = await axios.get(`${apiUrl}/rates/ticker`, { 
+        headers: HEADERS
+    })
+    const responseData = response.data
+    console.log('Exchange rate:', responseData)
+    return responseData
+        
     } catch (error) {
         console.error('Error ', error.response?.data || error.message)
     }
-  };
+};
 
 const getBalances = async () => {
     try {
@@ -243,12 +243,50 @@ const getBalances = async () => {
         console.log('Balances', responseData)
         return responseData
             
-      } catch (error) {
-          console.error('Error ', error.response?.data || error.message)
-      }
+    } catch (error) {
+        console.error('Error ', error.response?.data || error.message)
+    }
 };
 
 
+const getAcctLimits = async () => {
+    try {
+        const response = await axios.get(`${apiUrl}/accounts/limits`, { 
+            headers: HEADERS
+        })
+        const responseData = response.data
+        console.log('Acct Limits', responseData)
+        return responseData
+    } catch (error) {
+          console.error('Error ', error.response?.data || error.message)
+    }
+};
+
+const depositHistory = async () => {
+    try {
+        const response = await axios.get(`${apiUrl}/deposits`, { 
+            headers: HEADERS
+        })
+        const responseData = response.data
+        console.log('Deposits', responseData)
+        return responseData
+    } catch (error) {
+          console.error('Error ', error.response?.data || error.message)
+    }
+};
+
+const payoutHistory = async () => {
+    try {
+        const response = await axios.get(`${apiUrl}/payouts`, { 
+            headers: HEADERS
+        })
+        const responseData = response.data
+        console.log('Payouts', responseData)
+        return responseData
+    } catch (error) {
+          console.error('Error ', error.response?.data || error.message)
+    }
+};
 
 export {
     createInvoice, 
@@ -265,6 +303,9 @@ export {
     allInvoiceByStatus,
     payPaymentQuote,
     exchangeRates,
-    getBalances
+    getBalances,
+    getAcctLimits,
+    depositHistory,
+    payoutHistory
 
 }
