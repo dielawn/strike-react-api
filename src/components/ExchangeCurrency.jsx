@@ -1,3 +1,4 @@
+import './ExchangeCurrency.css'
 import { useState } from "react";
 import { quoteExchange, executeExchange } from "../../strikeApi";
 import CountdownTimer from '../components/CountdownTImer';
@@ -44,7 +45,7 @@ const ExchangeCurrency = ({ currency, totalUSD, totalBTC }) => {
 
     return (
         <div>
-            <legend>Exchange pair</legend>
+            <h3>Exchange pair:
             <select 
                 value={`${sellCurrency}/${buyCurrency}`} 
                 onChange={handleCurrencyChange}
@@ -57,6 +58,7 @@ const ExchangeCurrency = ({ currency, totalUSD, totalBTC }) => {
                     </option>
                 ))}
             </select>
+            </h3>
             <button onClick={() => getExchangeQuote()}>Get Exchange Quote</button>
             {exchangeQuote && (
                 <div>

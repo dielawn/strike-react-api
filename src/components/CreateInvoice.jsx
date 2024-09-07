@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import './CreateInvoice.css'
+import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { createInvoice } from '../../strikeApi';
 import { QuoteInvoice } from './QuoteInv';
 
-const Invoice = ({ currency, totalUSD, totalBTC }) => {
+
+const Invoice = ({ currency, totalUSD, totalBTC, setLnInv }) => {
     const [invoice, setInvoice] = useState(null);
     const [description, setDescription] = useState('');
     const [quote, setQuote] = useState(null);
@@ -16,7 +18,7 @@ const Invoice = ({ currency, totalUSD, totalBTC }) => {
         const correlationId = uuidv4();        
         const formattedCurrency = currency.toUpperCase();
                
-        const data = { 
+        const strikeData = { 
             correlationId,
             description,
             amount: {
@@ -24,29 +26,47 @@ const Invoice = ({ currency, totalUSD, totalBTC }) => {
                 amount: currency === 'USD' ? totalUSD : totalBTC
             }
          }
-       const newInv = await createInvoice(data);
+       const newInv = await createInvoice(strikeData);
        setInvoice(newInv)
     };
 
+    const deleteInvoice = () => {
+        setInvoice(null);
+        setQuote(null);
+        setLnInv('')
+    };
+    
+    useEffect(() => {
+        if (invoice && invoice !== undefined) {
+            setLnInv(invoice.lnInvoice)
+            console.log('lnInvoice set')
+        }
+    }, [invoice])
 
     return (
-        <div>
-            <legend>Create Strike Invoice</legend>      
-           
-            <label>Description
-                <input 
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                />
-            </label>
-           
-            <button type='button' onClick={createNewInvoice}>Create Invoice</button>
-            {invoice && 
-            <>
-            <p>Invoice Id: {invoice.invoiceId}</p>
-             <QuoteInvoice invoiceId={invoice.invoiceId} quote={quote} setQuote={setQuote} />
+        <div className='flexColumn'>
+             
+            {invoice ? 
+            (<div className='invoiceDiv'>
             
-            </>}
+                <QuoteInvoice invoiceId={invoice.invoiceId} quote={quote} setQuote={setQuote} />
+                <button type='button' onClick={deleteInvoice}>Delete Invoice</button>
+               </div>)
+            :
+            (<>
+                <h3 className='inputLabel'>Memo: 
+                    <input 
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                    />
+                </h3>
+               
+                <button type='button' onClick={createNewInvoice}>Create Invoice</button>
+                
+                </>)
+            }
+               
+             
         </div>
     )
 };

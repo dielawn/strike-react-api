@@ -1,3 +1,4 @@
+import './CurrencySelect.css'
 const CurrencySelect = ({ currency, setCurrency }) => {
     const currencies = ['USD', 'BTC', 'SATS' ];
     
@@ -7,8 +8,9 @@ const CurrencySelect = ({ currency, setCurrency }) => {
 
     return (
         <div>
-            <legend>Preferred Unit</legend>
+            <h3 className='inputLabel'>Preferred Unit: 
             <select 
+                className="currencySelect"
                 value={currency} 
                 onChange={handleCurrencyChange}
                 id="currency-select"
@@ -20,6 +22,7 @@ const CurrencySelect = ({ currency, setCurrency }) => {
                     </option>
                 ))}
             </select>
+            </h3>
         </div>
     );
 };

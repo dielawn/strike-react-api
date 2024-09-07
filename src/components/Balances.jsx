@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { getBalances, getAcctLimits, depositHistory, payoutHistory } from "../../strikeApi";
 
-const AcctBalances = () => {
-    const [balanceData, setBalanceData] = useState(null);
-    const [limitsData, setLimitsData] = useState(null);
-    const [depositsData, setDepositsData] = useState(null);
-    const [payoutData, setPayoutData] = useState(null);
+
+const AcctBalances = ({ balanceData, setBalanceData, limitsData, setLimitsData, depositsData, setDepositsData, setPayoutData}) => {
+    // const [balanceData, setBalanceData] = useState(null);
+    // const [limitsData, setLimitsData] = useState(null);
+    // const [depositsData, setDepositsData] = useState(null);
+    // const [payoutData, setPayoutData] = useState(null);
 
     const [totalDepositUSD, setTotalDepositUSD] = useState(0);
     const [totalPayout, setTotalPayout] = useState(0);

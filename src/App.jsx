@@ -11,17 +11,19 @@ import InvoiceHistory from './components/InvoiceHistory';
 import OnChainPaymentQuote from './components/OnChainPayQuote';
 import ExchangeCurrency from './components/ExchangeCurrency';
 import AcctBalances from './components/Balances';
-
+import CardWrapper from './components/Card';
 import { exchangeRates } from '../strikeApi';
 import { rateCalculator } from '../utils';
-
+import NavLinks from './components/NavLinks';
+import QRCode from 'react-qr-code'; // default import
 
 function App() {
-  const [activeTab, setActiveTab] = useState('exchangeCurrency');
+  const [activeTab, setActiveTab] = useState('home');
   const [rates, setRates] = useState([]);
 
-  const [handle, setHandle] = useState('becke543');
+  const [handle, setHandle] = useState('dmercill');
   const [quoteId, setQuoteId] = useState('');
+  const [lnInv, setLnInv] = useState('');
   
   const [totalUSD, setTotalUSD] = useState(0);
   const [totalBTC, setTotalBTC] = useState(0);
@@ -30,9 +32,16 @@ function App() {
   const [currency, setCurrency] = useState('SATS');
   const [currencies, setCurrencies] = useState([])
 
+  const [balanceData, setBalanceData] = useState(null);
+  const [limitsData, setLimitsData] = useState(null);
+  const [depositsData, setDepositsData] = useState(null);
+  const [payoutData, setPayoutData] = useState(null);
+
   const formattedUSD = `$${Number(totalUSD).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
   const formattedBTC = `${Number(totalBTC).toString().slice(0, 10)} btc`
   const formattedSATS = `${(totalSats).toLocaleString().slice(0, 12)} sats`
+
+  
 
   // User available and invoicable currencies
   // useEffect(() => {
@@ -126,118 +135,142 @@ function App() {
   
   return (
     <div>
-      <AcctBalances />
-      <div className="navDiv">
-        <button onClick={() => handleTabChange('getPaid')}>Get Paid</button>
-        <button onClick={() => handleTabChange('payOut')}>Pay Out</button>        
-        <button onClick={() => handleTabChange('exchangeCurrency')}>Exchange Currencies</button>
-        <button onClick={() => handleTabChange('searchDiv')}>Search</button>
-        <button onClick={() => handleTabChange('historyDiv')}>History</button>
-        
-      </div>
-      <div>
-      {(activeTab === 'payOut' || activeTab === 'payHandle' || activeTab === 'payOnChain' || activeTab === 'payBank' || activeTab === 'payLightningInv') &&<>
-        <button onClick={() => handleTabChange('payLightningInv')}>Pay Lightning Invoice</button>
-        <button onClick={() => handleTabChange('payHandle')}>Pay Strike Handle</button>
-        
-        <button onClick={() => handleTabChange('payOnChain')}>On Chain</button>
-        <button onClick={() => handleTabChange('payBank')}>Bank</button>
-      </>}
-      </div>
-      {(activeTab === 'payHandle' || activeTab === 'payOnChain' || activeTab === 'getPaid' || activeTab === 'exchangeCurrency')  &&
-       <div>
-       {totalUSD > 0 && 
-        <>  
-          <p>{formattedBTC}</p> 
-          <p>{formattedSATS}</p>
-          <p>{formattedUSD}</p>
-        </>}
-       <CurrencySelect 
-        currency={currency}
-        setCurrency={setCurrency}
-      />
-      <div>
-        <legend>Amount</legend>
-      <label>
-        <input 
-        value={
-            currency === 'USD' ? totalUSD :
-            currency === 'BTC' ? totalBTC : 
-            totalSats}
-        onChange={(e) => 
-            currency === 'USD' ? setTotalUSD(e.target.value) : 
-            currency === 'BTC' ? setTotalBTC(e.target.value) : 
-            setTotalSats(e.target.value)}
-        />
-      </label>     
-      </div>
-    </div>}
+      <main className="main-layout">
+        <div className="header header-md">
+          {handle && <h1>{handle}@strike.me</h1>}
+          <CardWrapper />
+        </div>
 
-    {activeTab === 'getPaid' && 
-      <div className='getPaid'>
-        <Invoice 
-          currency={currency} 
-          totalUSD={totalUSD}
-          totalBTC={totalBTC}
-        />        
-      </div>}
+        <div className="content-layout content-layout-md">
+
+          <div className="left-section left-section-md">
+            {/* <div className={styles.shape} /> */}
+            <NavLinks activeTab={activeTab} handleTabChange={handleTabChange}/>
+              <span>Log in</span>
+              {/* <img src={arrowRightIcon} className="w-5 md:w-6" /> */}
+          
+          </div>
+
+          <div className="right-section right-section-md">
+            {/* relevant tab */}
+           
+              {(activeTab === 'payOut' || activeTab === 'payHandle' || activeTab === 'payOnChain' || activeTab === 'payBank' || activeTab === 'payLightningInv') &&<>
+                <button onClick={() => handleTabChange('payLightningInv')}>Pay Lightning Invoice</button>
+                <button onClick={() => handleTabChange('payHandle')}>Pay Strike Handle</button>
+                
+                <button onClick={() => handleTabChange('payOnChain')}>On Chain</button>
+                <button onClick={() => handleTabChange('payBank')}>Bank</button>
+              </>}
+            
+              {(activeTab === 'payHandle' || activeTab === 'payOnChain' || activeTab === 'getPaid' || activeTab === 'exchangeCurrency')  &&
+              <div className='inputDiv'>
+                <CurrencySelect 
+                  currency={currency}
+                  setCurrency={setCurrency}
+                />
+              
+                <h3 className='inputLabel'>Amount: 
+              
+                <input 
+                className='amountInput'
+                value={
+                    currency === 'USD' ? totalUSD :
+                    currency === 'BTC' ? totalBTC : 
+                    totalSats}
+                onChange={(e) => 
+                    currency === 'USD' ? setTotalUSD(e.target.value) : 
+                    currency === 'BTC' ? setTotalBTC(e.target.value) : 
+                    setTotalSats(e.target.value)}
+                />
+                </h3> 
+            </div>}
+            {activeTab === 'getPaid' && <>
+              <div className='getPaid'>
+                <Invoice 
+                  currency={currency} 
+                  totalUSD={totalUSD}
+                  totalBTC={totalBTC}
+                  setLnInv={setLnInv}
+                />                      
+              </div>
+               {lnInv !== '' &&      
+                <div className="qrCode" >
+                  <QRCode value={lnInv || ' '} size={256} />  
+                </div>               
+                                       
+              }</>
+              }
+          
 
 
-    {activeTab === 'payHandle' && 
-      <div className='payHandle'>
-        <UserInvoice 
-          currency={currency}
-          totalUSD={totalUSD}
-          totalBTC={totalBTC}
-          totalSATS={totalSats}
-        />      
-      </div>}
+            {activeTab === 'payHandle' && 
+              <div className='payHandle'>
+                <UserInvoice 
+                  currency={currency}
+                  totalUSD={totalUSD}
+                  totalBTC={totalBTC}
+                  totalSATS={totalSats}
+                />      
+              </div>}
 
-      {activeTab === 'payLightningInv' && 
-      <div>
-        <LightningPaymentQuote 
-          currency={currency} 
-          totalUSD={totalUSD} 
-          totalBTC={totalBTC} 
-          totalSATS={totalSats}
-        />
-      </div>}
+              {activeTab === 'payLightningInv' && 
+              <div>
+                <LightningPaymentQuote 
+                  currency={currency} 
+                  totalUSD={totalUSD} 
+                  totalBTC={totalBTC} 
+                  totalSATS={totalSats}
+                />
+              </div>}
 
-    {activeTab === 'payOnChain' && 
-    <div className="payOnChain">
-      <OnChainPaymentQuote 
-        currency={currency} 
-        totalUSD={totalUSD} 
-        totalBTC={totalBTC}
-      />     
-    </div>
-    }
+            {activeTab === 'payOnChain' && 
+            <div className="payOnChain">
+              <OnChainPaymentQuote 
+                currency={currency} 
+                totalUSD={totalUSD} 
+                totalBTC={totalBTC}
+              />     
+            </div>
+            }
 
-    {activeTab === 'exchangeCurrency' && 
-      <div>
-        <ExchangeCurrency 
-          currency={currency}
-          totalUSD={totalUSD}
-          totalBTC={totalBTC}
-        />         
-      </div>
-    }
+            {activeTab === 'exchangeCurrency' && 
+              <div>
+                <ExchangeCurrency 
+                  currency={currency}
+                  totalUSD={totalUSD}
+                  totalBTC={totalBTC}
+                />         
+              </div>
+            }
 
-    {activeTab === 'payBank' &&
-      <div>
-        <BankPayout />
-      </div>}
+            {activeTab === 'payBank' &&
+              <div>
+                <BankPayout />
+              </div>}
 
-    {activeTab === 'searchDiv' && 
-      <div className='searchDiv'>
-        <StrikeUser />
-        <SearchInvoices />
-       </div>}
-    {activeTab === 'historyDiv' &&
-      <div className="historyDiv">
-        <InvoiceHistory />
-      </div>
-    }
+            {activeTab === 'searchDiv' && 
+              <div className='searchDiv'>
+                <StrikeUser />
+                <SearchInvoices />
+              </div>}
+            {activeTab === 'history' &&
+              <div className="history">
+                <InvoiceHistory />
+
+                {/* Deposit history */}
+
+              </div>
+            }
+          {totalUSD > 0 && 
+                <div className='currencyConversion'>  
+                  <h2>{formattedBTC}</h2> 
+                  <h2>{formattedSATS}</h2>
+                  <h2>{formattedUSD}</h2>
+                </div>}
+          </div>
+
+        </div>
+        </main>      
     </div>
   )
 }

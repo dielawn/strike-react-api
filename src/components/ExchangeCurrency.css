@@ -1,0 +1,10 @@
+select {
+    min-height: 35px;
+    padding: 10px;
+    margin-left: 10px;
+    border-radius: 7px;
+    background-color: #fff;
+    color: #000;
+    outline: none;
+    border: none;
+}

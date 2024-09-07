@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import CountdownTimer from "./CountdownTImer";
 import { quoteInvoice } from "../../strikeApi";
+import React from 'react';
+
+
 
 export const QuoteInvoice = ({ invoiceId, quote, setQuote }) => {    
     
@@ -23,15 +26,17 @@ export const QuoteInvoice = ({ invoiceId, quote, setQuote }) => {
         const interval = setInterval(() => {
             if (quote) {
                 const now = new Date();
-                const exp = Date(quote.expiration)
+                const exp = new Date(quote.expiration); 
                 if (now > exp) {
                     clearInterval(interval)
                     fetchNewQuote();
                     console.log('Quote renewed')
                 }
             }
-        }, 60000)
-    }, [quote]);
+        }, 60000);
+
+        return () => clearInterval(interval); // cleanup on unmount
+      }, [quote]);
     
     const copyLnInv = () => {
         navigator.clipboard.writeText(quote.lnInvoice)
@@ -40,12 +45,13 @@ export const QuoteInvoice = ({ invoiceId, quote, setQuote }) => {
 
     return (
         <div>
-            <legend>Quote from Strike Invoice</legend>   
+             
             {quote && 
-            <>
-                <p>Quote id: {quote.quoteId}</p>
+            <>               
                 <CountdownTimer targetDate={quote.expiration} />
                 <p>Lightning Invoice: {quote.lnInvoice.slice(0, 9)}...{quote.lnInvoice.slice(-10, quote.lnInvoice.length)}</p>
+                
+                
                 <button type="button" onClick={copyLnInv}>Copy Lightning Inv</button>
             </>}
         </div>

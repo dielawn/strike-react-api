@@ -1,0 +1,17 @@
+.flexColumn {
+    display: flex;
+    flex-direction: column;
+}
+
+h3 {
+    color: #000;
+}
+
+input{
+    outline: none;
+    border: none;
+}
+.invoiceDiv{
+    color: #000;
+}
+
