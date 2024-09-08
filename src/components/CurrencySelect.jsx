@@ -8,7 +8,7 @@ const CurrencySelect = ({ currency, setCurrency }) => {
 
     return (
         <div>
-            <h3 className='inputLabel'>Preferred Unit: 
+            <h3 className='inputLabel'>
             <select 
                 className="currencySelect"
                 value={currency} 

@@ -1,0 +1,65 @@
+.tierList {
+   display: flex;
+    z-index: 1;
+    background-color: #f8c5ec;
+    
+}
+
+.tier {
+    margin: 5px;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+
+
+}
+
+.onchainQuote {
+    text-align: left;
+}
+
+.tierHeader {
+    background-color: #f8c5ec;
+    z-index: 2;
+}
+
+.tierBtn {
+    border-radius: 7px;
+    background-color: #000;
+    min-width: 110px;
+    min-height: 110px;
+}
+
+.tierBtn:hover {
+    background-color: #fff;
+    color: #000;
+    outline: none;
+    border: none;
+}
+
+.tierBtn:focus {
+    background-color: #fff;
+    color: #000;
+    outline: none;
+    border: none;
+}
+
+.icon {
+    max-height: 20px;
+}
+
+.btnDiv {
+    display: flex;
+    justify-content: space-around;
+    
+}
+
+.payBtns {
+    min-width: 100px;
+    max-height: 40px;
+    align-content: center;
+    text-align: center;
+    display: flex;
+}

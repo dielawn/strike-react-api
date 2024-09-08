@@ -1,7 +1,9 @@
+import './LightningPaymentQuote.css'
 import { useEffect, useState } from 'react';
 import { quoteLightning, executePay } from '../../strikeApi';
+import lightningIcon from '../assets/bolt_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.png'
 
-const LightningPaymentQuote = ({ currency }) => {
+const LightningPaymentQuote = ({ currency, activeTab }) => {
 
     const [lnInvoice, setLnInvoice] = useState('');
     // using lnInvoice from quote sets payQuote in fetchPayQuote
@@ -42,14 +44,18 @@ const LightningPaymentQuote = ({ currency }) => {
 
     return (
         <div>
-            <legend>Create Lightning Pay Quote</legend>
-            <label>Lightning Inv: 
+            <h1>Lightning Pay Quote</h1>
+            <h3>Lightning Inv: 
                 <input 
                  value={lnInvoice}
                  onChange={(e) => setLnInvoice(e.target.value)}
                 />
-            </label>
-            <button type='button' onClick={getPayQuote}>Pay Lightning Invoice</button>
+            </h3>
+            <button  
+                type='button' 
+                onClick={getPayQuote}
+                className={`btn ${activeTab === 'payLightningInv' ? 'btn-active' : ''} md:btn-md`}
+                >Pay <img className='icon' src={lightningIcon} alt='Lightning' /> </button>
             {payData &&
             <>
                 <p>{payData.amount.currency === 'USD' ? `$${payData.amount.amount}` : `${payData.amount.amount} btc`}</p>

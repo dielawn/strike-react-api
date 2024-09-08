@@ -1,0 +1,15 @@
+.btn {
+    width: 100px;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-active, .btn:hover {
+    background-color: #fff;
+    color: #000;
+    outline: none;
+    border: none;
+}
+h3 {
+    text-align: end;
+}

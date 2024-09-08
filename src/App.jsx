@@ -16,9 +16,15 @@ import { exchangeRates } from '../strikeApi';
 import { rateCalculator } from '../utils';
 import NavLinks from './components/NavLinks';
 import QRCode from 'react-qr-code'; // default import
+import lightningBoltIcon from './assets/bolt_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.png'
+import chainIcon from './assets/link_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.png'
+import savingsIcon from './assets/savings_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.png'
+import bankIcon from './assets/account_balance_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.png'
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
+  const [activeBtns, setActiveBtns] = useState([]);
+
   const [rates, setRates] = useState([]);
 
   const [handle, setHandle] = useState('dmercill');
@@ -154,23 +160,22 @@ function App() {
           <div className="right-section right-section-md">
             {/* relevant tab */}
            
-              {(activeTab === 'payOut' || activeTab === 'payHandle' || activeTab === 'payOnChain' || activeTab === 'payBank' || activeTab === 'payLightningInv') &&<>
-                <button onClick={() => handleTabChange('payLightningInv')}>Pay Lightning Invoice</button>
-                <button onClick={() => handleTabChange('payHandle')}>Pay Strike Handle</button>
-                
-                <button onClick={() => handleTabChange('payOnChain')}>On Chain</button>
-                <button onClick={() => handleTabChange('payBank')}>Bank</button>
-              </>}
+              {(activeTab === 'payOut' || 
+                activeTab === 'payHandle' || 
+                activeTab === 'payOnChain' || 
+                activeTab === 'payBank' || 
+                activeTab === 'payLightningInv') &&
+                <div className='sendNav'>
+                  <button className='payBtn' onClick={() => handleTabChange('payLightningInv')}><img className='icon' alt='Lightning' src={lightningBoltIcon}/>Lightning</button>
+                  <button className='payBtn' onClick={() => handleTabChange('payHandle')}>@strike.me</button>                
+                  <button className='payBtn' onClick={() => handleTabChange('payOnChain')}><img className='icon' src={savingsIcon} /> On Chain</button>
+                  <button className='payBtn' onClick={() => handleTabChange('payBank')}><img className='icon' src={bankIcon} alt='Bank'/>Bank</button>
+                </div>}
             
               {(activeTab === 'payHandle' || activeTab === 'payOnChain' || activeTab === 'getPaid' || activeTab === 'exchangeCurrency')  &&
               <div className='inputDiv'>
-                <CurrencySelect 
-                  currency={currency}
-                  setCurrency={setCurrency}
-                />
-              
-                <h3 className='inputLabel'>Amount: 
-              
+                
+                <h3 className='inputLabel'>Amount:               
                 <input 
                 className='amountInput'
                 value={
@@ -182,7 +187,11 @@ function App() {
                     currency === 'BTC' ? setTotalBTC(e.target.value) : 
                     setTotalSats(e.target.value)}
                 />
-                </h3> 
+                </h3> <CurrencySelect 
+                  currency={currency}
+                  setCurrency={setCurrency}
+                />
+              
             </div>}
             {activeTab === 'getPaid' && <>
               <div className='getPaid'>
@@ -204,7 +213,7 @@ function App() {
 
 
             {activeTab === 'payHandle' && 
-              <div className='payHandle'>
+              <div className='payHandle payDiv'>
                 <UserInvoice 
                   currency={currency}
                   totalUSD={totalUSD}
@@ -214,7 +223,7 @@ function App() {
               </div>}
 
               {activeTab === 'payLightningInv' && 
-              <div>
+              <div className='payDiv'>
                 <LightningPaymentQuote 
                   currency={currency} 
                   totalUSD={totalUSD} 
@@ -224,11 +233,12 @@ function App() {
               </div>}
 
             {activeTab === 'payOnChain' && 
-            <div className="payOnChain">
+            <div className="payOnChain payDiv">
               <OnChainPaymentQuote 
                 currency={currency} 
-                totalUSD={totalUSD} 
+               
                 totalBTC={totalBTC}
+                totalUSD={totalUSD}
               />     
             </div>
             }
@@ -244,7 +254,7 @@ function App() {
             }
 
             {activeTab === 'payBank' &&
-              <div>
+              <div className='payDiv'>
                 <BankPayout />
               </div>}
 

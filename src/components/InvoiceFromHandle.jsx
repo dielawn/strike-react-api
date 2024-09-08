@@ -106,19 +106,20 @@ const UserInvoice = ({ currency, totalUSD, totalBTC, totalSATS }) => {
 
     return (
         <div>
-            <legend>Create an invoice on behalf of another user</legend>
-            <label>Description
+            <h1>Send to handle</h1>
+            
+            <h3>
+                <input 
+                    value={handle}
+                    onChange={(e) => setHandle(e.target.value)}
+                />@strike.me
+            </h3>
+            <h3>Memo
                 <input 
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                 />
-            </label>
-            <label>Handle
-                <input 
-                    value={handle}
-                    onChange={(e) => setHandle(e.target.value)}
-                />
-            </label>
+            </h3>
             <button type='button' onClick={invoiceFromHandle}>Pay</button>
             {lnInvoice !== '' && <button onClick={() => copyLnInv()}>Copy Lightning Invoice</button>}
           

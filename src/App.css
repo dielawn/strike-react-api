@@ -96,12 +96,15 @@
 }
 
 input {
-  min-height: 30px;
+  min-height: 27px;
   border-radius: 7px;
   padding: 5px;
   margin-left: 10px;
   background-color: #fff;
   color: #000;
+}
+.amountInput {
+  text-align: center;
 }
 
 .amountInput {
@@ -115,15 +118,58 @@ input {
   text-align: end;
   padding: 15px;
   position: absolute;
-  top: 5px;
-  left: 5px;
+  bottom: 30px;
+  right: 30px;
 }
 .inputDiv {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 30px;
+  left: 30px;
+  display: flex;
 }
+.sendNav {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+}
+.payDiv {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  display: flex;
+  flex-direction: column;
+  color: #000;
+  max-width: 50%;
 
+}
+.payBtn{
+  display: flex;   
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.375rem;
+    background-color: #000000; /* gray-50 */
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin: 5px;
+}
+.payBtn:hover {
+  background-color: #fff; 
+    color: #000;
+    outline: none;
+    border: none;
+}
+.payBtn:focus{
+  background-color: #fff; 
+    color: #000;
+    outline: none;
+    border: none;
+}
 .getPaid {
   position: absolute;
   right: 15px;
