@@ -48,6 +48,7 @@
 
 .icon {
     max-height: 20px;
+    padding-right: 3px;
 }
 
 .btnDiv {
@@ -62,4 +63,5 @@
     align-content: center;
     text-align: center;
     display: flex;
+    justify-content: space-around;
 }

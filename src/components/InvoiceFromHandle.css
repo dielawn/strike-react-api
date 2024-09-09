@@ -1,0 +1,10 @@
+.payDiv {
+    display: flex;
+    justify-content: flex-start;
+    text-align: left;
+}
+
+.btnDiv {
+    display: flex;
+    justify-content: space-around;
+}

@@ -1,7 +1,9 @@
+import './InvoiceFromHandle.css'
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { createHandleInvoice, executePay, quoteLightning, quoteInvoice } from "../../strikeApi";
-
+import lightningIcon from '../assets/bolt_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.png'
+import copyIcon from '../assets/content_copy_24dp_5F6368_FILL0_wght400_GRAD0_opsz24.png'
 const UserInvoice = ({ currency, totalUSD, totalBTC, totalSATS }) => {
 
     const [handle, setHandle] = useState('becke543');
@@ -105,14 +107,13 @@ const UserInvoice = ({ currency, totalUSD, totalBTC, totalSATS }) => {
     }
 
     return (
-        <div>
-            <h1>Send to handle</h1>
-            
-            <h3>
+        <div>        
+            <h1>@strike.me</h1>   
+            <h3>Handle
                 <input 
                     value={handle}
                     onChange={(e) => setHandle(e.target.value)}
-                />@strike.me
+                />
             </h3>
             <h3>Memo
                 <input 
@@ -120,9 +121,21 @@ const UserInvoice = ({ currency, totalUSD, totalBTC, totalSATS }) => {
                     onChange={(e) => setDescription(e.target.value)}
                 />
             </h3>
-            <button type='button' onClick={invoiceFromHandle}>Pay</button>
-            {lnInvoice !== '' && <button onClick={() => copyLnInv()}>Copy Lightning Invoice</button>}
-          
+            <div className='btnDiv'>
+                <button 
+                    className='btn' 
+                    type='button' 
+                    onClick={invoiceFromHandle}>
+                        Pay
+                </button>
+                {lnInvoice !== '' && 
+                    <button 
+                        className='btn' 
+                        onClick={() => copyLnInv()}>
+                            <img className='icon' src={copyIcon} alt='Copy' /> Invoice
+                    </button>
+                }
+            </div>
             {payData && <p>Payment: {payData.result} Status: {payData.state}</p>}
         </div>
     )

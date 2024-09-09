@@ -125,11 +125,13 @@ const quoteExchange = async (data) => {
         const response = await axios.post(`${apiUrl}/currency-exchange-quotes`, data, {
             headers: HEADERS
         })
+        
         const responseData = response.data
         console.log('exchange quote', responseData)
         return responseData
 
     } catch (error) {
+       
         console.error('Error ', error.response?.data);
     }
 };

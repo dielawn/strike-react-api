@@ -43,7 +43,7 @@ const LightningPaymentQuote = ({ currency, activeTab }) => {
     }
 
     return (
-        <div>
+        <div className='lightningDiv'>
             <h1>Lightning Pay Quote</h1>
             <h3>Lightning Inv: 
                 <input 

@@ -32,11 +32,11 @@ const CountdownTimer = ({ targetDate }) => {
     return (
         <div>
             {timeLeft.total > 0 ? (
-                <p>
+                <h3>
                    Best Before: {timeLeft.hours === 0 ? '' : `${timeLeft.hours}h`} {timeLeft.minutes === 0 ? '' : `${timeLeft.minutes}m`} {timeLeft.seconds}s
-                </p>
+                </h3>
             ) : (
-                <p>Quote expired!</p>
+                <h3>Quote expired!</h3>
             )}
         </div>
     );

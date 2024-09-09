@@ -138,6 +138,11 @@ function App() {
     }
   }, [currency, totalBTC, totalUSD, totalSats, rates]);
 
+  useEffect(() => {
+    setTotalBTC(0)
+    setTotalSats(0)
+    setTotalUSD(0)
+  }, [activeTab])
   
   return (
     <div>

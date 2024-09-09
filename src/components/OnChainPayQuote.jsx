@@ -12,9 +12,12 @@ const OnChainPaymentQuote = ({ currency, totalUSD, totalBTC }) => {
     const [payData, setPayData] = useState(null);
     const [tier, setTier] = useState('tier_free');
     const [allTiers, setAllTiers] = useState([]);
-    const [btcAddress, setBtcAddress] = useState('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa');
+    const [btcAddress, setBtcAddress] = useState('');
     const [description, setDescription] = useState('');
+    const [message, setMessage] = useState('');
+
     const formattedCurrency = currency.toUpperCase();
+
 
     // Returns quotes for each pay tier
     const onChainQuotes = async () => {                
@@ -34,7 +37,9 @@ const OnChainPaymentQuote = ({ currency, totalUSD, totalBTC }) => {
 // test address: 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
     useEffect(() => {
         const fetchQuotes = async () => {
-            if (btcAddress !== '' && totalBTC > 0 && totalUSD > 0 ) {
+            if (btcAddress === '' ||  totalBTC < .00074) {
+                return
+            } else {
                await onChainQuotes();
             }
         }
@@ -102,6 +107,22 @@ const OnChainPaymentQuote = ({ currency, totalUSD, totalBTC }) => {
         setBtcAddress('');
     }
 
+    useEffect(() => {
+        if (totalBTC < .00074) {
+            setMessage('Minimum on chain withdrawl must be greater than .00075')
+            return
+        } else {
+            setMessage('')
+        }
+    }, [totalBTC, btcAddress])
+
+    useEffect(() => {
+        if (btcAddress === '') {
+            setMessage('BTC address required')
+            return
+        }
+    }, [btcAddress, totalBTC])
+
     return (
     <div>
          {payData ?
@@ -160,6 +181,7 @@ const OnChainPaymentQuote = ({ currency, totalUSD, totalBTC }) => {
                             onChange={(e) => setDescription(e.target.value)}
                         />
                     </h3>
+                    {message && <p>{message}</p>}
                     <button className='payBtns' onClick={() => getPayQuote(tier)}><img className='icon' src={quoteIcon} alt='Quote'/> Get Quote</button>
                 </>)
             )

@@ -1,5 +1,5 @@
 select {
-    min-height: 35px;
+    height: 38px;
     padding: 10px;
     margin-left: 10px;
     border-radius: 7px;
@@ -7,4 +7,17 @@ select {
     color: #000;
     outline: none;
     border: none;
+}
+
+.exchangeDiv {
+   display: flex;
+   
+}
+
+.btn {
+    margin-left: 10px;
+}
+
+.messageTxt {
+    color: #000;
 }
